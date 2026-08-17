@@ -1,0 +1,75 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    @apply bg-slate-50 text-slate-900 antialiased;
+  }
+
+  /* Evita que iOS faci zoom en enfocar un camp de formulari. */
+  input,
+  select,
+  textarea {
+    font-size: 16px;
+  }
+}
+
+@layer components {
+  .card {
+    @apply rounded-2xl border border-slate-200 bg-white shadow-sm;
+  }
+
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5
+           text-sm font-semibold transition
+           disabled:cursor-not-allowed disabled:opacity-50;
+  }
+
+  .btn-primary {
+    @apply btn bg-brand-600 text-white hover:bg-brand-700 active:bg-brand-800;
+  }
+
+  .btn-secondary {
+    @apply btn bg-white text-slate-700 ring-1 ring-slate-300 hover:bg-slate-50;
+  }
+
+  .btn-danger {
+    @apply btn bg-white text-red-600 ring-1 ring-red-200 hover:bg-red-50;
+  }
+
+  .input {
+    @apply w-full rounded-xl border-0 bg-white px-3 py-2.5 text-slate-900
+           ring-1 ring-inset ring-slate-300 placeholder:text-slate-400
+           focus:ring-2 focus:ring-inset focus:ring-brand-500;
+  }
+
+  .label {
+    @apply mb-1 block text-sm font-medium text-slate-700;
+  }
+}
+
+/* Cartells QR: un per full, sense la interfície de l'admin. */
+@media print {
+  body {
+    background: #fff;
+  }
+  header,
+  footer,
+  nav {
+    display: none !important;
+  }
+}
+
+/* Barra de filtres amb scroll horitzontal al mòbil, sense barra visible. */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}

@@ -1,0 +1,182 @@
+# Vila Cup 3x3 — 4a edició
+
+Web del torneig de bàsquet 3x3 de Vilafranca del Penedès.
+Diumenge 23 d'agost de 2026, Pavelló Poliesportiu Nou (La Gamba).
+
+- **Públic** (sense registre): horaris, resultats en directe, classificacions,
+  vista per pista amb QR i fotos, sponsors.
+- **Organització** (`/admin`, amb login): equips, partits, pistes, sponsors,
+  marcadors en directe i generació de cartells QR.
+
+Stack: Next.js 14 (App Router) · TypeScript · Tailwind · Supabase
+(Postgres + Auth + Realtime) · Vercel. Tot en capa gratuïta.
+
+---
+
+## Posada en marxa (primera vegada)
+
+### 1. Crear el projecte de Supabase
+
+1. Entra a <https://supabase.com> i crea un compte (gratuït).
+2. **New project**. Nom: `vilacup`. Regió: **Frankfurt (eu-central-1)** o
+   **London**, que són les més properes. Apunta't la contrasenya de la base de
+   dades (no la faràs servir gaire, però guarda-la).
+3. Espera ~2 minuts fins que el projecte estigui llest.
+
+### 2. Crear les taules
+
+1. Dins del projecte: menú lateral → **SQL Editor** → **New query**.
+2. Obre el fitxer [`supabase/migrations/0001_init.sql`](supabase/migrations/0001_init.sql),
+   copia'n **tot** el contingut, enganxa'l a l'editor i prem **Run**.
+3. Hauries de veure `Success. No rows returned`.
+
+Això crea les taules (`teams`, `matches`, `courts`, `sponsors`, `settings`,
+`admins`), les polítiques de seguretat (RLS), activa Realtime i dona d'alta
+tres pistes.
+
+### 3. Crear el teu usuari d'administrador
+
+1. Menú lateral → **Authentication** → **Users** → **Add user** → **Create new user**.
+2. Posa el teu email i una contrasenya. Marca **Auto Confirm User**.
+3. Torna al **SQL Editor** i executa això, canviant l'email pel teu:
+
+   ```sql
+   insert into public.admins (user_id)
+   select id from auth.users where email = 'EL_TEU_EMAIL@exemple.com';
+   ```
+
+4. **Important:** menú lateral → **Authentication** → **Sign In / Providers** →
+   **Email** → desactiva **Allow new users to sign up**. Així ningú es pot
+   registrar pel seu compte.
+
+### 4. Configurar el projecte en local
+
+1. Menú lateral de Supabase → **Project Settings** → **API**. Copia:
+   - **Project URL**
+   - **anon public** key
+2. A la carpeta del projecte, crea el fitxer `.env.local` (pots copiar
+   `.env.local.example`) amb aquest contingut:
+
+   ```
+   NEXT_PUBLIC_SUPABASE_URL=https://xxxxxxxx.supabase.co
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOi....
+   ```
+
+   > Aquestes dues claus són públiques: van al navegador. El que protegeix les
+   > dades són les polítiques RLS, no les claus. No posis mai la `service_role`
+   > en aquest fitxer.
+
+3. Arrenca el projecte:
+
+   ```powershell
+   npm install
+   npm run dev
+   ```
+
+4. Obre <http://localhost:3000> i <http://localhost:3000/admin>.
+
+### 5. (Opcional) Dades d'exemple per provar
+
+Executa [`supabase/seed_demo.sql`](supabase/seed_demo.sql) al SQL Editor per
+tenir equips i partits de mentida i poder veure com queda tot. Al final del
+fitxer hi ha les tres línies per esborrar-ho quan tinguis les dades reals.
+
+---
+
+## Desplegar a Vercel
+
+1. Puja el projecte a GitHub:
+
+   ```powershell
+   git remote add origin https://github.com/EL_TEU_USUARI/vilacup.git
+   git push -u origin main
+   ```
+
+2. Entra a <https://vercel.com>, **Add New → Project**, i importa el repositori.
+3. A la pantalla d'import, desplega **Environment Variables** i afegeix:
+
+   | Name | Value |
+   | --- | --- |
+   | `NEXT_PUBLIC_SUPABASE_URL` | el mateix que a `.env.local` |
+   | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | el mateix que a `.env.local` |
+
+4. **Deploy**. En un parell de minuts tindràs una URL tipus
+   `https://vilacup.vercel.app`.
+5. Torna a **Settings → Environment Variables** i afegeix
+   `NEXT_PUBLIC_SITE_URL` amb aquesta URL. Després **Deployments → ⋯ → Redeploy**.
+   Això fa que els codis QR es generin ja apuntant al domini bo.
+
+Cada `git push` a `main` desplega automàticament.
+
+---
+
+## Codis QR per al pavelló
+
+1. Entra a `/admin/qr` **des de la web desplegada** (no des de localhost).
+2. Comprova que l'adreça que surt a dalt és la de Vercel.
+3. **Imprimir cartells**: surt un full per pista, amb el nom, el QR i el text
+   d'instruccions, més un cartell general que porta a la home.
+4. Enganxa cada cartell a la seva pista.
+
+Qui escaneja el QR de la Pista 1 va a `/pista/<id>`, on veu només els partits
+d'aquella pista, els marcadors en directe i el botó de fotos.
+
+---
+
+## El dia del torneig
+
+- **Marcadors:** `/admin` → tria el partit → botons grossos `+1 +2 +3` i `−1`.
+  Es desa sol i surt al web públic a l'instant.
+- **Estat:** cada partit té *Programat → En joc → Finalitzat*. La classificació
+  només compta els finalitzats.
+- **Diverses persones alhora:** poden entrar amb el mateix usuari des de mòbils
+  diferents. Si dues persones toquen el mateix partit, els canvis se
+  sincronitzen sols.
+- **Avisos:** `/admin/config` té un camp de missatge que surt destacat a la home
+  (retards, canvis d'última hora...).
+
+---
+
+## Estructura del codi
+
+```
+app/
+  page.tsx                 home pública
+  horaris/                 llistat filtrable de partits
+  classificacio/           classificació per categoria
+  pistes/, pista/[id]/     vista per pista (destí dels QR)
+  admin/
+    login/                 login amb email i contrasenya
+    page.tsx               llista de partits per posar marcador
+    partit/[id]/           marcador en directe d'un partit
+    partits/, equips/, pistes/, sponsors/, qr/, config/
+components/                UI compartida (pública i admin/)
+lib/
+  supabase/                clients de Supabase (navegador, servidor, middleware)
+  types.ts, constants.ts   model de dades i textos del torneig
+  standings.ts             càlcul de la classificació
+  useLiveMatches.ts        subscripció a Realtime
+supabase/
+  migrations/0001_init.sql esquema + RLS + Realtime
+  seed_demo.sql            dades de prova opcionals
+middleware.ts              protegeix /admin i refresca la sessió
+```
+
+### Coses que potser voldràs tocar
+
+- **Dades del torneig** (nom, data, pavelló): `lib/constants.ts`.
+- **Punts de classificació**: `POINTS_WIN` / `POINTS_LOSS` a `lib/constants.ts`.
+  Ara està a victòria = 2, derrota = 1 (reglament FIBA 3x3).
+- **Categories**: `lib/constants.ts` **i** el tipus `category` de la base de
+  dades. Per afegir-ne una de nova cal executar també
+  `alter type public.category add value 'nova';`.
+
+---
+
+## Comandes
+
+```powershell
+npm run dev     # servidor de desenvolupament
+npm run build   # comprova que compila (el mateix que fa Vercel)
+npm run lint    # errors d'estil
+```
