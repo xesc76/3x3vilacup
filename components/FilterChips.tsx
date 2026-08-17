@@ -15,11 +15,9 @@ export function FilterChips<T extends string>({
 }) {
   return (
     <div>
-      <p className="mb-1.5 px-0.5 text-xs font-semibold uppercase tracking-wide text-slate-500">
-        {label}
-      </p>
+      <p className="label">{label}</p>
       <div
-        className="no-scrollbar -mx-4 flex gap-2 overflow-x-auto px-4 pb-1"
+        className="no-scrollbar -mx-4 flex gap-1.5 overflow-x-auto px-4"
         role="group"
         aria-label={label}
       >
@@ -31,10 +29,10 @@ export function FilterChips<T extends string>({
               type="button"
               aria-pressed={selected}
               onClick={() => onChange(option.value)}
-              className={`shrink-0 rounded-full px-3.5 py-2 text-sm font-semibold transition ${
+              className={`shrink-0 rounded-sm border px-3 py-1.5 font-display text-sm uppercase tracking-wide transition ${
                 selected
-                  ? 'bg-ink-800 text-white'
-                  : 'bg-white text-slate-600 ring-1 ring-slate-300 hover:bg-slate-50'
+                  ? 'border-violet-900 bg-violet-900 text-white'
+                  : 'border-violet-200 bg-white text-violet-600 hover:border-violet-400'
               }`}
             >
               {option.label}

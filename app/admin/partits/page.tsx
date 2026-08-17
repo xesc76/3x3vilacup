@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server';
+﻿import { createClient } from '@/lib/supabase/server';
 import { fetchMatches } from '@/lib/queries';
 import type { Court, Team } from '@/lib/types';
 import { MatchesAdmin } from '@/components/admin/MatchesAdmin';
@@ -16,10 +16,10 @@ export default async function AdminMatches() {
 
   return (
     <div>
-      <h1 className="text-2xl font-black tracking-tight text-slate-900">
+      <h1 className="text-2xl font-bold tracking-tight text-violet-950">
         Partits
       </h1>
-      <p className="mt-1 text-sm text-slate-500">
+      <p className="mt-1 text-sm text-violet-500">
         Crea el calendari. Per posar marcadors, ves a «Marcadors».
       </p>
       <div className="mt-5">

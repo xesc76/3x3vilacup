@@ -8,7 +8,16 @@
   }
 
   body {
-    @apply bg-slate-50 text-slate-900 antialiased;
+    @apply bg-white text-violet-950 antialiased;
+    font-feature-settings: 'tnum' 1;
+  }
+
+  /* Els titulars són condensats i en majúscules: llenguatge de cartelleria
+     esportiva, no de web genèrica. */
+  h1,
+  h2,
+  h3 {
+    @apply font-display uppercase tracking-tight;
   }
 
   /* Evita que iOS faci zoom en enfocar un camp de formulari. */
@@ -17,39 +26,57 @@
   textarea {
     font-size: 16px;
   }
+
+  ::selection {
+    @apply bg-acid-400 text-violet-950;
+  }
 }
 
 @layer components {
-  .card {
-    @apply rounded-2xl border border-slate-200 bg-white shadow-sm;
+  /* Franja de marca: el mateix degradat que la banda del logo. */
+  .brand-rule {
+    @apply h-1 w-full bg-brand-bar;
+  }
+
+  .panel {
+    @apply border border-violet-100 bg-white;
   }
 
   .btn {
-    @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5
-           text-sm font-semibold transition
-           disabled:cursor-not-allowed disabled:opacity-50;
+    @apply inline-flex items-center justify-center gap-2 rounded-sm px-4 py-2.5
+           font-display text-sm uppercase tracking-wide transition
+           disabled:cursor-not-allowed disabled:opacity-40;
   }
 
   .btn-primary {
-    @apply btn bg-brand-600 text-white hover:bg-brand-700 active:bg-brand-800;
+    @apply btn bg-violet-600 text-white hover:bg-violet-700 active:bg-violet-800;
+  }
+
+  .btn-acid {
+    @apply btn bg-acid-400 text-violet-950 hover:bg-acid-300 active:bg-acid-500;
   }
 
   .btn-secondary {
-    @apply btn bg-white text-slate-700 ring-1 ring-slate-300 hover:bg-slate-50;
+    @apply btn border border-violet-200 bg-white text-violet-800 hover:border-violet-300 hover:bg-violet-50;
   }
 
   .btn-danger {
-    @apply btn bg-white text-red-600 ring-1 ring-red-200 hover:bg-red-50;
+    @apply btn border border-red-200 bg-white text-red-600 hover:bg-red-50;
   }
 
   .input {
-    @apply w-full rounded-xl border-0 bg-white px-3 py-2.5 text-slate-900
-           ring-1 ring-inset ring-slate-300 placeholder:text-slate-400
-           focus:ring-2 focus:ring-inset focus:ring-brand-500;
+    @apply w-full rounded-sm border border-violet-200 bg-white px-3 py-2.5
+           text-violet-950 placeholder:text-violet-300
+           focus:border-violet-500 focus:outline-none focus:ring-1 focus:ring-violet-500;
   }
 
   .label {
-    @apply mb-1 block text-sm font-medium text-slate-700;
+    @apply mb-1 block font-display text-xs uppercase tracking-widest text-violet-500;
+  }
+
+  /* Titolet de secció amb el filet groc a l'esquerra. */
+  .eyebrow {
+    @apply flex items-center gap-2 font-display text-sm uppercase tracking-widest text-violet-500;
   }
 }
 
@@ -62,6 +89,11 @@
   footer,
   nav {
     display: none !important;
+  }
+  /* Sense això el navegador imprimeix els cartells sense els colors de marca. */
+  * {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
   }
 }
 

@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server';
+﻿import { createClient } from '@/lib/supabase/server';
 import type { Court } from '@/lib/types';
 import { CourtsAdmin } from '@/components/admin/CourtsAdmin';
 
@@ -10,10 +10,10 @@ export default async function AdminCourts() {
 
   return (
     <div>
-      <h1 className="text-2xl font-black tracking-tight text-slate-900">
+      <h1 className="text-2xl font-bold tracking-tight text-violet-950">
         Pistes
       </h1>
-      <p className="mt-1 text-sm text-slate-500">
+      <p className="mt-1 text-sm text-violet-500">
         Cada pista té la seva pàgina pública i el seu codi QR.
       </p>
       <div className="mt-5">

@@ -6,6 +6,7 @@ import { TOURNAMENT } from '@/lib/constants';
 import type { Court, Settings } from '@/lib/types';
 import { PageShell } from '@/components/SiteChrome';
 import { ScheduleLive } from '@/components/ScheduleLive';
+import { CameraIcon } from '@/components/Icons';
 
 export const revalidate = 0;
 
@@ -55,9 +56,10 @@ export default async function PistaPage({
           href={photosUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="btn-primary mb-5 w-full py-3 text-base"
+          className="btn-acid mb-6 w-full py-3.5 text-base"
         >
-          📷 Fotos d’aquesta pista
+          <CameraIcon />
+          Fotos d’aquesta pista
         </a>
       )}
 

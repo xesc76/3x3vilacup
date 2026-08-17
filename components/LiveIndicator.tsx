@@ -1,8 +1,8 @@
 export function LiveIndicator({ live }: { live: boolean }) {
   return (
     <span
-      className={`inline-flex items-center gap-1.5 text-xs font-medium ${
-        live ? 'text-emerald-600' : 'text-slate-400'
+      className={`inline-flex items-center gap-2 font-display text-xs uppercase tracking-widest ${
+        live ? 'text-violet-700' : 'text-violet-300'
       }`}
       title={
         live
@@ -11,11 +11,11 @@ export function LiveIndicator({ live }: { live: boolean }) {
       }
     >
       <span
-        className={`h-2 w-2 rounded-full ${
-          live ? 'animate-pulse-dot bg-emerald-500' : 'bg-slate-300'
+        className={`h-2 w-2 ${
+          live ? 'animate-blink bg-acid-400' : 'bg-violet-200'
         }`}
       />
-      {live ? 'En directe' : 'Reconnectant…'}
+      {live ? 'En directe' : 'Reconnectant'}
     </span>
   );
 }

@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -28,10 +28,10 @@ export function AdminNav() {
           <Link
             key={item.href}
             href={item.href}
-            className={`shrink-0 rounded-lg px-3 py-1.5 text-sm font-semibold transition ${
+            className={`shrink-0 rounded-sm px-3 py-1.5 font-display text-sm uppercase tracking-wide transition ${
               active
-                ? 'bg-brand-500 text-white'
-                : 'text-slate-300 hover:bg-white/10 hover:text-white'
+                ? 'bg-acid-400 text-violet-950'
+                : 'text-violet-300 hover:bg-white/10 hover:text-white'
             }`}
           >
             {item.label}

@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
@@ -9,7 +9,7 @@ import type { MatchStatus, MatchWithNames } from '@/lib/types';
 type SaveState = 'idle' | 'saving' | 'saved' | 'error';
 
 const STATUS_BUTTONS: { value: MatchStatus; className: string }[] = [
-  { value: 'programado', className: 'bg-slate-700' },
+  { value: 'programado', className: 'bg-violet-800' },
   { value: 'en_juego', className: 'bg-red-600' },
   { value: 'finalizado', className: 'bg-emerald-600' },
 ];
@@ -134,11 +134,11 @@ export function ScoreControl({ match }: { match: MatchWithNames }) {
   };
 
   const teamPanel = (side: 'home' | 'away', name: string, score: number) => (
-    <div className="card p-4">
-      <p className="truncate text-center text-base font-bold text-slate-900">
+    <div className="panel p-4">
+      <p className="truncate text-center text-base font-bold text-violet-950">
         {name}
       </p>
-      <p className="my-2 text-center font-mono text-6xl font-black tabular-nums text-slate-900">
+      <p className="my-2 text-center font-display text-7xl leading-none tabular-nums text-violet-950">
         {score}
       </p>
       <div className="grid grid-cols-3 gap-2">
@@ -166,11 +166,11 @@ export function ScoreControl({ match }: { match: MatchWithNames }) {
 
   return (
     <div className="space-y-4">
-      <div className="card p-4">
-        <p className="text-sm font-semibold text-slate-900">
+      <div className="panel p-4">
+        <p className="text-sm font-semibold text-violet-950">
           {formatTime(match.starts_at)} · {CATEGORY_LABEL[match.category]}
         </p>
-        <p className="text-xs text-slate-500">
+        <p className="text-xs text-violet-500">
           {[match.court?.name, match.round].filter(Boolean).join(' · ') ||
             'Sense pista assignada'}
         </p>
@@ -181,7 +181,7 @@ export function ScoreControl({ match }: { match: MatchWithNames }) {
         {teamPanel('away', match.away_team?.name ?? 'Visitant', away)}
       </div>
 
-      <div className="card p-4">
+      <div className="panel p-4">
         <p className="label">Estat del partit</p>
         <div className="grid grid-cols-3 gap-2">
           {STATUS_BUTTONS.map((option) => (
@@ -192,7 +192,7 @@ export function ScoreControl({ match }: { match: MatchWithNames }) {
               className={`btn py-3 ${
                 status === option.value
                   ? `${option.className} text-white`
-                  : 'bg-white text-slate-600 ring-1 ring-slate-300'
+                  : 'bg-white text-violet-600 ring-1 ring-violet-300'
               }`}
             >
               {STATUS_LABEL[option.value]}
@@ -202,7 +202,7 @@ export function ScoreControl({ match }: { match: MatchWithNames }) {
       </div>
 
       <div className="flex min-h-6 items-center justify-center text-sm">
-        {save === 'saving' && <span className="text-slate-500">Desant…</span>}
+        {save === 'saving' && <span className="text-violet-500">Desant…</span>}
         {save === 'saved' && (
           <span className="font-semibold text-emerald-600">
             ✓ Desat i publicat

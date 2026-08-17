@@ -4,11 +4,13 @@ export function SponsorsGrid({ sponsors }: { sponsors: Sponsor[] }) {
   if (sponsors.length === 0) return null;
 
   return (
-    <section className="mt-10">
-      <h2 className="mb-3 text-center text-xs font-bold uppercase tracking-[0.2em] text-slate-400">
+    <section className="mt-14">
+      <h2 className="eyebrow justify-center">
+        <span className="h-px w-8 bg-violet-200" />
         Amb el suport de
+        <span className="h-px w-8 bg-violet-200" />
       </h2>
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+      <div className="mt-4 grid grid-cols-2 gap-px bg-violet-100 sm:grid-cols-3 lg:grid-cols-4">
         {sponsors.map((sponsor) => {
           const logo = (
             // eslint-disable-next-line @next/next/no-img-element
@@ -27,7 +29,7 @@ export function SponsorsGrid({ sponsors }: { sponsors: Sponsor[] }) {
               target="_blank"
               rel="noopener noreferrer sponsored"
               title={sponsor.name}
-              className="card flex h-24 items-center justify-center p-4 transition hover:shadow-md"
+              className="flex h-24 items-center justify-center bg-white p-4 transition hover:bg-violet-50"
             >
               {logo}
             </a>
@@ -35,7 +37,7 @@ export function SponsorsGrid({ sponsors }: { sponsors: Sponsor[] }) {
             <div
               key={sponsor.id}
               title={sponsor.name}
-              className="card flex h-24 items-center justify-center p-4"
+              className="flex h-24 items-center justify-center bg-white p-4"
             >
               {logo}
             </div>

@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 /**
  * Missatge d'error uniforme per a tots els formularis de l'admin.
@@ -12,7 +12,7 @@ export function ErrorNote({ error }: { error: string | null }) {
     error.includes('row-level security') || error.includes('violates policy');
 
   return (
-    <p className="mt-3 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700 ring-1 ring-red-200">
+    <p className="mt-3 rounded-sm bg-red-50 px-3 py-2 text-sm text-red-700 ring-1 ring-red-200">
       {error}
       {isRls && (
         <span className="mt-1 block text-xs">
@@ -32,8 +32,8 @@ export function SectionCard({
   children: React.ReactNode;
 }) {
   return (
-    <section className="card p-4">
-      <h2 className="mb-3 text-sm font-bold uppercase tracking-wide text-slate-500">
+    <section className="panel p-4">
+      <h2 className="mb-3 text-sm font-bold uppercase tracking-wide text-violet-500">
         {title}
       </h2>
       {children}

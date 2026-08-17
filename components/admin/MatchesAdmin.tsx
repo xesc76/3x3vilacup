@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -164,7 +164,7 @@ export function MatchesAdmin({
           </div>
 
           {teamsInCategory.length < 2 ? (
-            <p className="rounded-lg bg-amber-50 px-3 py-2 text-sm text-amber-800 ring-1 ring-amber-200">
+            <p className="rounded-sm bg-amber-50 px-3 py-2 text-sm text-amber-800 ring-1 ring-amber-200">
               Necessites com a mínim dos equips a{' '}
               {CATEGORY_LABEL[form.category]}.{' '}
               <Link href="/admin/equips" className="font-semibold underline">
@@ -282,23 +282,23 @@ export function MatchesAdmin({
 
       <div className="space-y-2">
         {visible.length === 0 && (
-          <p className="card p-6 text-center text-sm text-slate-500">
+          <p className="panel p-6 text-center text-sm text-violet-500">
             Cap partit en aquesta selecció.
           </p>
         )}
         {visible.map((match) => (
           <div
             key={match.id}
-            className="card flex flex-wrap items-center gap-3 p-3.5"
+            className="panel flex flex-wrap items-center gap-3 p-3.5"
           >
-            <span className="w-12 shrink-0 font-mono text-sm font-bold tabular-nums text-slate-700">
+            <span className="w-12 shrink-0 font-display text-base tabular-nums text-violet-800">
               {formatTime(match.starts_at)}
             </span>
             <div className="min-w-0 flex-1">
-              <p className="truncate text-sm font-bold text-slate-900">
+              <p className="truncate text-sm font-bold text-violet-950">
                 {match.home_team?.name} vs {match.away_team?.name}
               </p>
-              <p className="truncate text-xs text-slate-500">
+              <p className="truncate text-xs text-violet-500">
                 {[
                   CATEGORY_LABEL[match.category],
                   match.court?.name ?? 'sense pista',

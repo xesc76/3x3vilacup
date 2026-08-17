@@ -1,7 +1,9 @@
-'use client';
+﻿'use client';
 
+import Image from 'next/image';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Suspense, useState } from 'react';
+import logo from '@/public/logo.jpg';
 import { createClient } from '@/lib/supabase/client';
 import { TOURNAMENT } from '@/lib/constants';
 
@@ -38,11 +40,18 @@ function LoginForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="card w-full max-w-sm p-6">
-      <h1 className="text-xl font-black tracking-tight text-slate-900">
-        Accés organització
-      </h1>
-      <p className="mt-1 text-sm text-slate-500">
+    <form onSubmit={handleSubmit} className="panel w-full max-w-sm p-6">
+      <Image
+        src={logo}
+        alt=""
+        width={56}
+        height={56}
+        className="rounded-sm"
+        priority
+      />
+      <h1 className="mt-4 text-2xl text-violet-950">Accés organització</h1>
+      <div className="mt-2 h-1 w-12 bg-acid-400" />
+      <p className="mt-3 text-sm text-violet-500">
         {TOURNAMENT.name} · {TOURNAMENT.edition}
       </p>
 
@@ -78,7 +87,7 @@ function LoginForm() {
       </div>
 
       {error && (
-        <p className="mt-3 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700 ring-1 ring-red-200">
+        <p className="mt-3 rounded-sm bg-red-50 px-3 py-2 text-sm text-red-700 ring-1 ring-red-200">
           {error}
         </p>
       )}
@@ -92,7 +101,7 @@ function LoginForm() {
 
 export default function LoginPage() {
   return (
-    <div className="grid min-h-screen place-items-center bg-slate-100 px-4">
+    <div className="grid min-h-screen place-items-center bg-violet-50 px-4">
       <Suspense fallback={null}>
         <LoginForm />
       </Suspense>

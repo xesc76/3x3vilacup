@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server';
+﻿import { createClient } from '@/lib/supabase/server';
 import type { Settings } from '@/lib/types';
 import { SettingsAdmin } from '@/components/admin/SettingsAdmin';
 
@@ -14,7 +14,7 @@ export default async function AdminConfig() {
 
   return (
     <div>
-      <h1 className="text-2xl font-black tracking-tight text-slate-900">
+      <h1 className="text-2xl font-bold tracking-tight text-violet-950">
         Configuració
       </h1>
       <div className="mt-5">

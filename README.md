@@ -85,28 +85,24 @@ fitxer hi ha les tres línies per esborrar-ho quan tinguis les dades reals.
 
 ## Desplegar a Vercel
 
-1. Puja el projecte a GitHub:
+El repositori és <https://github.com/xesc76/3x3vilacup> i cada `git push` a
+`main` desplega sol.
 
-   ```powershell
-   git remote add origin https://github.com/EL_TEU_USUARI/vilacup.git
-   git push -u origin main
-   ```
+**Abans del primer desplegament**, a Vercel → el projecte → **Settings →
+Environment Variables**, afegeix aquestes tres (marcades per a *Production*,
+*Preview* i *Development*):
 
-2. Entra a <https://vercel.com>, **Add New → Project**, i importa el repositori.
-3. A la pantalla d'import, desplega **Environment Variables** i afegeix:
+| Name | Value |
+| --- | --- |
+| `NEXT_PUBLIC_SUPABASE_URL` | `https://xxxxxxxx.supabase.co` (igual que a `.env.local`, **sense** `/rest/v1/` al final) |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | igual que a `.env.local` |
+| `NEXT_PUBLIC_SITE_URL` | la URL de Vercel, p. ex. `https://3x3vilacup.vercel.app` |
 
-   | Name | Value |
-   | --- | --- |
-   | `NEXT_PUBLIC_SUPABASE_URL` | el mateix que a `.env.local` |
-   | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | el mateix que a `.env.local` |
+Sense aquestes variables el desplegament compila igualment però el web surt
+buit: no sap a quina base de dades connectar-se.
 
-4. **Deploy**. En un parell de minuts tindràs una URL tipus
-   `https://vilacup.vercel.app`.
-5. Torna a **Settings → Environment Variables** i afegeix
-   `NEXT_PUBLIC_SITE_URL` amb aquesta URL. Després **Deployments → ⋯ → Redeploy**.
-   Això fa que els codis QR es generin ja apuntant al domini bo.
-
-Cada `git push` a `main` desplega automàticament.
+Si les afegeixes després d'un desplegament, cal tornar-lo a llançar:
+**Deployments → ⋯ → Redeploy**.
 
 ---
 

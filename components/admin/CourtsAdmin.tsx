@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useRouter } from 'next/navigation';
 import { useMemo, useState } from 'react';
@@ -118,7 +118,7 @@ export function CourtsAdmin({ courts }: { courts: Court[] }) {
               placeholder="https://photos.app.goo.gl/…"
               className="input"
             />
-            <p className="mt-1 text-xs text-slate-500">
+            <p className="mt-1 text-xs text-violet-500">
               Si el deixes buit, s’utilitzarà l’àlbum general que hagis posat a
               Configuració.
             </p>
@@ -145,18 +145,18 @@ export function CourtsAdmin({ courts }: { courts: Court[] }) {
 
       <div className="space-y-2">
         {courts.length === 0 && (
-          <p className="card p-6 text-center text-sm text-slate-500">
+          <p className="panel p-6 text-center text-sm text-violet-500">
             Encara no hi ha cap pista.
           </p>
         )}
         {courts.map((court) => (
           <div
             key={court.id}
-            className="card flex flex-wrap items-center gap-3 p-3.5"
+            className="panel flex flex-wrap items-center gap-3 p-3.5"
           >
             <div className="min-w-0 flex-1">
-              <p className="font-bold text-slate-900">{court.name}</p>
-              <p className="truncate text-xs text-slate-500">
+              <p className="font-bold text-violet-950">{court.name}</p>
+              <p className="truncate text-xs text-violet-500">
                 Ordre {court.sort_order}
                 {court.google_photos_url
                   ? ' · àlbum propi'

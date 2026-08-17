@@ -35,13 +35,6 @@ export const STATUS_LABEL: Record<MatchStatus, string> = {
   finalizado: 'Finalitzat',
 };
 
-/** Classes Tailwind del "badge" d'estat. */
-export const STATUS_STYLE: Record<MatchStatus, string> = {
-  programado: 'bg-slate-100 text-slate-600 ring-1 ring-slate-200',
-  en_juego: 'bg-red-50 text-red-700 ring-1 ring-red-200',
-  finalizado: 'bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200',
-};
-
 /**
  * Punts de classificació. Per defecte, reglament FIBA 3x3:
  * victòria = 2, derrota = 1. Canvia aquí si el torneig fa servir 3/0.

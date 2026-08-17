@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import Link from 'next/link';
 import { useMemo, useState } from 'react';
@@ -75,17 +75,17 @@ export function MatchPicker({
         />
       </div>
 
-      <div className="flex items-center justify-between border-t border-slate-200 pt-3">
-        <p className="text-sm text-slate-500">
+      <div className="flex items-center justify-between border-t border-violet-100 pt-3">
+        <p className="text-sm text-violet-500">
           {visible.length} {visible.length === 1 ? 'partit' : 'partits'}
         </p>
         <LiveIndicator live={live} />
       </div>
 
       {visible.length === 0 ? (
-        <p className="card p-6 text-center text-sm text-slate-500">
+        <p className="panel p-6 text-center text-sm text-violet-500">
           Cap partit amb aquests filtres.{' '}
-          <Link href="/admin/partits" className="font-semibold text-brand-600">
+          <Link href="/admin/partits" className="font-semibold text-violet-600">
             Crear-ne un
           </Link>
         </p>
@@ -95,23 +95,23 @@ export function MatchPicker({
             <Link
               key={m.id}
               href={`/admin/partit/${m.id}`}
-              className="card flex items-center gap-3 p-3 transition hover:shadow-md active:bg-slate-50"
+              className="panel flex items-center gap-3 p-3 transition hover:shadow-md active:bg-violet-50"
             >
-              <span className="w-12 shrink-0 font-mono text-sm font-bold tabular-nums text-slate-700">
+              <span className="w-12 shrink-0 font-display text-base tabular-nums text-violet-800">
                 {formatTime(m.starts_at)}
               </span>
               <span className="min-w-0 flex-1">
-                <span className="block truncate text-sm font-semibold text-slate-900">
+                <span className="block truncate text-sm font-semibold text-violet-950">
                   {m.home_team?.name ?? '—'} vs {m.away_team?.name ?? '—'}
                 </span>
-                <span className="block truncate text-xs text-slate-500">
+                <span className="block truncate text-xs text-violet-500">
                   {[CATEGORY_LABEL[m.category], m.court?.name, m.round]
                     .filter(Boolean)
                     .join(' · ')}
                 </span>
               </span>
               <span className="shrink-0 text-right">
-                <span className="block font-mono text-lg font-bold tabular-nums text-slate-900">
+                <span className="block font-display text-xl tabular-nums text-violet-950">
                   {m.status === 'programado'
                     ? '–'
                     : `${m.home_score}-${m.away_score}`}

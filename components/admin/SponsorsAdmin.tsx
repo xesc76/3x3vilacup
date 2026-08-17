@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useRouter } from 'next/navigation';
 import { useMemo, useState } from 'react';
@@ -130,7 +130,7 @@ export function SponsorsAdmin({ sponsors }: { sponsors: Sponsor[] }) {
               placeholder="https://…/logo.png"
               className="input"
             />
-            <p className="mt-1 text-xs text-slate-500">
+            <p className="mt-1 text-xs text-violet-500">
               Millor un PNG amb fons transparent. Pots pujar-lo a Supabase
               Storage o a qualsevol allotjament públic.
             </p>
@@ -152,12 +152,12 @@ export function SponsorsAdmin({ sponsors }: { sponsors: Sponsor[] }) {
             />
           </div>
 
-          <label className="flex items-center gap-2 text-sm font-medium text-slate-700">
+          <label className="flex items-center gap-2 text-sm font-medium text-violet-800">
             <input
               type="checkbox"
               checked={form.active}
               onChange={(e) => setForm({ ...form, active: e.target.checked })}
-              className="h-4 w-4 rounded border-slate-300 text-brand-600"
+              className="h-4 w-4 rounded border-violet-300 text-violet-600"
             />
             Visible al web
           </label>
@@ -179,16 +179,16 @@ export function SponsorsAdmin({ sponsors }: { sponsors: Sponsor[] }) {
 
       <div className="space-y-2">
         {sponsors.length === 0 && (
-          <p className="card p-6 text-center text-sm text-slate-500">
+          <p className="panel p-6 text-center text-sm text-violet-500">
             Encara no hi ha sponsors.
           </p>
         )}
         {sponsors.map((sponsor, index) => (
           <div
             key={sponsor.id}
-            className="card flex flex-wrap items-center gap-3 p-3.5"
+            className="panel flex flex-wrap items-center gap-3 p-3.5"
           >
-            <div className="grid h-12 w-16 shrink-0 place-items-center rounded-lg bg-slate-50 p-1 ring-1 ring-slate-200">
+            <div className="grid h-12 w-16 shrink-0 place-items-center rounded-sm bg-violet-50 p-1 ring-1 ring-violet-100">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={sponsor.logo_url}
@@ -197,10 +197,10 @@ export function SponsorsAdmin({ sponsors }: { sponsors: Sponsor[] }) {
               />
             </div>
             <div className="min-w-0 flex-1">
-              <p className="truncate font-bold text-slate-900">
+              <p className="truncate font-bold text-violet-950">
                 {sponsor.name}
               </p>
-              <p className="text-xs text-slate-500">
+              <p className="text-xs text-violet-500">
                 {sponsor.active ? 'Visible' : 'Amagat'} · ordre{' '}
                 {sponsor.sort_order}
               </p>

@@ -1,9 +1,12 @@
-'use client';
+﻿'use client';
 
+import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import QRCode from 'qrcode';
+import logo from '@/public/logo.jpg';
 import { TOURNAMENT } from '@/lib/constants';
 import type { Court } from '@/lib/types';
+import { PrintIcon } from '@/components/Icons';
 
 type Poster = { key: string; title: string; url: string; dataUrl: string };
 
@@ -69,7 +72,7 @@ export function QrPosters({ courts }: { courts: Court[] }) {
           className="input"
         />
         {isLocal && (
-          <p className="mt-2 rounded-lg bg-amber-50 px-3 py-2 text-sm text-amber-800 ring-1 ring-amber-200">
+          <p className="mt-2 rounded-sm bg-amber-50 px-3 py-2 text-sm text-amber-800 ring-1 ring-amber-200">
             Estàs generant QR que apunten al teu ordinador. Abans d’imprimir,
             enganxa aquí l’adreça de Vercel (per exemple{' '}
             <code>https://vilacup.vercel.app</code>).
@@ -82,6 +85,7 @@ export function QrPosters({ courts }: { courts: Court[] }) {
           disabled={posters.length === 0 || isLocal}
           className="btn-primary mt-3"
         >
+          <PrintIcon />
           Imprimir cartells
         </button>
       </div>
@@ -90,28 +94,39 @@ export function QrPosters({ courts }: { courts: Court[] }) {
         {posters.map((poster) => (
           <article
             key={poster.key}
-            className="card break-inside-avoid p-6 text-center print:mb-8 print:break-after-page print:border-0 print:shadow-none"
+            className="panel break-inside-avoid overflow-hidden text-center print:mb-8 print:break-after-page print:border-0"
           >
-            <p className="text-xs font-bold uppercase tracking-[0.2em] text-brand-600">
-              {TOURNAMENT.name} · {TOURNAMENT.edition}
-            </p>
-            <h2 className="mt-1 text-3xl font-black tracking-tight text-slate-900">
-              {poster.title}
-            </h2>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={poster.dataUrl}
-              alt={`Codi QR de ${poster.title}`}
-              className="mx-auto my-4 w-full max-w-[260px]"
-            />
-            <p className="text-base font-bold text-slate-900">
-              Escaneja per veure horaris,
-              <br />
-              resultats en directe i fotos
-            </p>
-            <p className="mt-2 break-all text-[10px] text-slate-400">
-              {poster.url}
-            </p>
+            <div className="bg-violet-950 px-6 py-5">
+              <Image
+                src={logo}
+                alt=""
+                width={64}
+                height={64}
+                className="mx-auto rounded-sm"
+              />
+              <p className="mt-3 font-display text-xs uppercase tracking-[0.3em] text-acid-400">
+                {TOURNAMENT.name} · {TOURNAMENT.edition}
+              </p>
+              <h2 className="mt-1 text-4xl text-white">{poster.title}</h2>
+            </div>
+            <div className="brand-rule" />
+
+            <div className="px-6 py-6">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={poster.dataUrl}
+                alt={`Codi QR de ${poster.title}`}
+                className="mx-auto w-full max-w-[260px]"
+              />
+              <p className="mt-4 font-display text-xl uppercase leading-tight tracking-wide text-violet-950">
+                Escaneja per veure horaris,
+                <br />
+                resultats en directe i fotos
+              </p>
+              <p className="mt-3 break-all text-[10px] text-violet-300">
+                {poster.url}
+              </p>
+            </div>
           </article>
         ))}
       </div>

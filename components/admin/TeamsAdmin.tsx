@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useRouter } from 'next/navigation';
 import { useMemo, useState } from 'react';
@@ -168,28 +168,28 @@ export function TeamsAdmin({ teams }: { teams: Team[] }) {
 
       <div className="space-y-2">
         {visible.length === 0 && (
-          <p className="card p-6 text-center text-sm text-slate-500">
+          <p className="panel p-6 text-center text-sm text-violet-500">
             Cap equip en aquesta selecció.
           </p>
         )}
         {visible.map((team) => (
           <div
             key={team.id}
-            className="card flex flex-wrap items-center gap-3 p-3.5"
+            className="panel flex flex-wrap items-center gap-3 p-3.5"
           >
             {team.logo_url ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img
                 src={team.logo_url}
                 alt=""
-                className="h-9 w-9 shrink-0 rounded-full object-cover ring-1 ring-slate-200"
+                className="h-9 w-9 shrink-0 rounded-full object-cover ring-1 ring-violet-100"
               />
             ) : (
-              <span className="h-9 w-9 shrink-0 rounded-full bg-slate-100 ring-1 ring-slate-200" />
+              <span className="h-9 w-9 shrink-0 rounded-full bg-violet-50 ring-1 ring-violet-100" />
             )}
             <div className="min-w-0 flex-1">
-              <p className="truncate font-bold text-slate-900">{team.name}</p>
-              <p className="text-xs text-slate-500">
+              <p className="truncate font-bold text-violet-950">{team.name}</p>
+              <p className="text-xs text-violet-500">
                 {CATEGORY_LABEL[team.category]}
               </p>
             </div>

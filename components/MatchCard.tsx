@@ -1,19 +1,29 @@
 import { CATEGORY_LABEL } from '@/lib/constants';
 import { formatTime } from '@/lib/format';
-import type { MatchWithNames } from '@/lib/types';
+import type { MatchStatus, MatchWithNames } from '@/lib/types';
 import { StatusBadge } from './StatusBadge';
+
+/** Filet vertical de l'esquerra: dona l'estat d'un cop d'ull des de lluny. */
+const ACCENT: Record<MatchStatus, string> = {
+  programado: 'border-l-violet-100',
+  en_juego: 'border-l-acid-400',
+  finalizado: 'border-l-violet-700',
+};
 
 function TeamRow({
   name,
   logoUrl,
   score,
   showScore,
+  /** Només un cop acabat el partit atenuem el perdedor. */
+  dimmed,
   isWinner,
 }: {
   name: string;
   logoUrl: string | null;
   score: number;
   showScore: boolean;
+  dimmed: boolean;
   isWinner: boolean;
 }) {
   return (
@@ -23,25 +33,32 @@ function TeamRow({
         <img
           src={logoUrl}
           alt=""
-          className="h-7 w-7 shrink-0 rounded-full object-cover ring-1 ring-slate-200"
+          className="h-6 w-6 shrink-0 rounded-full object-cover ring-1 ring-violet-100"
         />
       ) : (
-        <span className="h-7 w-7 shrink-0 rounded-full bg-slate-100 ring-1 ring-slate-200" />
+        <span
+          aria-hidden
+          className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-violet-50 font-display text-xs text-violet-400"
+        >
+          {name.charAt(0)}
+        </span>
       )}
       <span
         className={`min-w-0 flex-1 truncate text-[15px] ${
-          isWinner ? 'font-bold text-slate-900' : 'font-medium text-slate-700'
+          isWinner
+            ? 'font-semibold text-violet-950'
+            : 'font-medium text-violet-800'
         }`}
       >
         {name}
       </span>
       <span
-        className={`w-9 shrink-0 text-right font-mono text-lg tabular-nums ${
-          showScore
-            ? isWinner
-              ? 'font-bold text-slate-900'
-              : 'font-semibold text-slate-600'
-            : 'text-slate-300'
+        className={`w-10 shrink-0 text-right font-display text-2xl leading-none tabular-nums ${
+          !showScore
+            ? 'text-violet-200'
+            : dimmed
+              ? 'text-violet-400'
+              : 'text-violet-950'
         }`}
       >
         {showScore ? score : '–'}
@@ -72,23 +89,29 @@ export function MatchCard({
 
   return (
     <article
-      className={`card p-3.5 ${
-        match.status === 'en_juego' ? 'ring-2 ring-red-200' : ''
-      }`}
+      className={`panel border-l-4 px-3.5 py-3 ${ACCENT[match.status]}`}
     >
-      <div className="mb-2.5 flex items-center justify-between gap-2">
-        <span className="font-mono text-sm font-semibold tabular-nums text-slate-900">
-          {formatTime(match.starts_at)}
-        </span>
+      <div className="mb-2 flex items-baseline justify-between gap-2">
+        <p className="flex min-w-0 items-baseline gap-2">
+          <span className="font-display text-lg leading-none tabular-nums text-violet-950">
+            {formatTime(match.starts_at)}
+          </span>
+          {meta.length > 0 && (
+            <span className="truncate font-display text-[11px] uppercase tracking-widest text-violet-400">
+              {meta.join(' · ')}
+            </span>
+          )}
+        </p>
         <StatusBadge status={match.status} />
       </div>
 
-      <div className="space-y-1.5">
+      <div className="space-y-1">
         <TeamRow
           name={match.home_team?.name ?? 'Per determinar'}
           logoUrl={match.home_team?.logo_url ?? null}
           score={match.home_score}
           showScore={showScore}
+          dimmed={finished && !homeWins}
           isWinner={homeWins}
         />
         <TeamRow
@@ -96,15 +119,10 @@ export function MatchCard({
           logoUrl={match.away_team?.logo_url ?? null}
           score={match.away_score}
           showScore={showScore}
+          dimmed={finished && !awayWins}
           isWinner={awayWins}
         />
       </div>
-
-      {meta.length > 0 && (
-        <p className="mt-2.5 border-t border-slate-100 pt-2 text-xs text-slate-500">
-          {meta.join(' · ')}
-        </p>
-      )}
     </article>
   );
 }

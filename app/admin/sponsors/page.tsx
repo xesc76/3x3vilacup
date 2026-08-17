@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server';
+﻿import { createClient } from '@/lib/supabase/server';
 import type { Sponsor } from '@/lib/types';
 import { SponsorsAdmin } from '@/components/admin/SponsorsAdmin';
 
@@ -13,10 +13,10 @@ export default async function AdminSponsors() {
 
   return (
     <div>
-      <h1 className="text-2xl font-black tracking-tight text-slate-900">
+      <h1 className="text-2xl font-bold tracking-tight text-violet-950">
         Sponsors
       </h1>
-      <p className="mt-1 text-sm text-slate-500">
+      <p className="mt-1 text-sm text-violet-500">
         Es mostren a la home, en aquest mateix ordre.
       </p>
       <div className="mt-5">

@@ -71,8 +71,8 @@ export function ScheduleLive({
         )}
       </div>
 
-      <div className="flex items-center justify-between border-t border-slate-200 pt-3">
-        <p className="text-sm text-slate-500">
+      <div className="flex items-center justify-between border-t border-violet-100 pt-3">
+        <p className="font-display text-xs uppercase tracking-widest text-violet-400">
           {visible.length} {visible.length === 1 ? 'partit' : 'partits'}
         </p>
         <LiveIndicator live={live} />
@@ -80,11 +80,11 @@ export function ScheduleLive({
 
       {playing.length > 0 && (
         <section>
-          <h2 className="mb-2 flex items-center gap-2 text-sm font-bold uppercase tracking-wide text-red-600">
-            <span className="h-2 w-2 animate-pulse-dot rounded-full bg-red-600" />
+          <h2 className="eyebrow mb-2.5 text-violet-950">
+            <span className="h-3 w-1 bg-acid-400" />
             Jugant-se ara
           </h2>
-          <div className="space-y-2.5">
+          <div className="space-y-2">
             {playing.map((m) => (
               <MatchCard key={`live-${m.id}`} match={m} showCourt={!courtId} />
             ))}
@@ -94,16 +94,17 @@ export function ScheduleLive({
 
       <section>
         {playing.length > 0 && (
-          <h2 className="mb-2 text-sm font-bold uppercase tracking-wide text-slate-500">
+          <h2 className="eyebrow mb-2.5">
+            <span className="h-3 w-1 bg-violet-200" />
             Tots els partits
           </h2>
         )}
         {visible.length === 0 ? (
-          <p className="card p-6 text-center text-sm text-slate-500">
+          <p className="panel px-4 py-10 text-center text-sm text-violet-400">
             Encara no hi ha partits per a aquesta selecció.
           </p>
         ) : (
-          <div className="space-y-2.5">
+          <div className="space-y-2">
             {visible.map((m) => (
               <MatchCard key={m.id} match={m} showCourt={!courtId} />
             ))}

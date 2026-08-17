@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useRouter } from 'next/navigation';
 import { useMemo, useState } from 'react';
@@ -53,7 +53,7 @@ export function SettingsAdmin({ settings }: { settings: Settings | null }) {
               placeholder="https://photos.app.goo.gl/…"
               className="input"
             />
-            <p className="mt-1 text-xs text-slate-500">
+            <p className="mt-1 text-xs text-violet-500">
               És l’àlbum que veurà la gent des de qualsevol pista que no tingui
               àlbum propi. A Google Photos: obre l’àlbum → Compartir → Crear
               enllaç, i enganxa’l aquí.
@@ -72,7 +72,7 @@ export function SettingsAdmin({ settings }: { settings: Settings | null }) {
               placeholder="Els partits de Cadet comencen 15 minuts més tard."
               className="input"
             />
-            <p className="mt-1 text-xs text-slate-500">
+            <p className="mt-1 text-xs text-violet-500">
               Deixa-ho buit perquè no aparegui res.
             </p>
           </div>

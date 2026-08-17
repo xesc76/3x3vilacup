@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { createClient } from '@/lib/supabase/server';
 import type { Court } from '@/lib/types';
 import { PageShell } from '@/components/SiteChrome';
+import { ArrowIcon } from '@/components/Icons';
 
 export const revalidate = 0;
 
@@ -21,24 +22,25 @@ export default async function Pistes() {
       subtitle="Tria una pista per veure’n els partits en directe i les fotos."
     >
       {courts.length === 0 ? (
-        <p className="card p-6 text-center text-sm text-slate-500">
+        <p className="panel px-4 py-10 text-center text-sm text-violet-400">
           Encara no hi ha pistes donades d’alta.
         </p>
       ) : (
-        <div className="grid gap-2.5 sm:grid-cols-2">
+        <ul className="border-t border-violet-100">
           {courts.map((court) => (
-            <Link
-              key={court.id}
-              href={`/pista/${court.id}`}
-              className="card flex items-center justify-between p-4 transition hover:shadow-md"
-            >
-              <span className="text-lg font-bold text-slate-900">
-                {court.name}
-              </span>
-              <span className="text-brand-600">→</span>
-            </Link>
+            <li key={court.id}>
+              <Link
+                href={`/pista/${court.id}`}
+                className="group flex items-center justify-between gap-3 border-b border-violet-100 py-4 transition hover:bg-violet-50"
+              >
+                <span className="font-display text-2xl uppercase tracking-wide text-violet-950">
+                  {court.name}
+                </span>
+                <ArrowIcon className="h-5 w-5 text-violet-300 transition group-hover:translate-x-1 group-hover:text-violet-900" />
+              </Link>
+            </li>
           ))}
-        </div>
+        </ul>
       )}
     </PageShell>
   );

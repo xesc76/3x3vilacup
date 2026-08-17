@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server';
+﻿import { createClient } from '@/lib/supabase/server';
 import type { Team } from '@/lib/types';
 import { TeamsAdmin } from '@/components/admin/TeamsAdmin';
 
@@ -14,10 +14,10 @@ export default async function AdminTeams() {
 
   return (
     <div>
-      <h1 className="text-2xl font-black tracking-tight text-slate-900">
+      <h1 className="text-2xl font-bold tracking-tight text-violet-950">
         Equips
       </h1>
-      <p className="mt-1 text-sm text-slate-500">
+      <p className="mt-1 text-sm text-violet-500">
         Dona d’alta els equips abans de crear els partits.
       </p>
       <div className="mt-5">

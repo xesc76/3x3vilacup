@@ -25,11 +25,11 @@ export default async function AdminMatchPage({
     <div>
       <Link
         href="/admin"
-        className="text-sm font-semibold text-slate-500 hover:text-slate-700"
+        className="text-sm font-semibold text-violet-500 hover:text-violet-800"
       >
         ← Tots els partits
       </Link>
-      <h1 className="mt-2 text-2xl font-black tracking-tight text-slate-900">
+      <h1 className="mt-2 text-2xl font-bold tracking-tight text-violet-950">
         Marcador en directe
       </h1>
       <div className="mt-5">

@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server';
+﻿import { createClient } from '@/lib/supabase/server';
 import { fetchMatches } from '@/lib/queries';
 import type { Court } from '@/lib/types';
 import { MatchPicker } from '@/components/admin/MatchPicker';
@@ -15,10 +15,10 @@ export default async function AdminScoreboards() {
 
   return (
     <div>
-      <h1 className="text-2xl font-black tracking-tight text-slate-900">
+      <h1 className="text-2xl font-bold tracking-tight text-violet-950">
         Marcadors
       </h1>
-      <p className="mt-1 text-sm text-slate-500">
+      <p className="mt-1 text-sm text-violet-500">
         Tria un partit per canviar-ne el marcador i l’estat. Els canvis es veuen
         al web públic a l’instant.
       </p>
