@@ -1,5 +1,8 @@
+'use client';
+
 import { CATEGORY_LABEL } from '@/lib/constants';
 import { formatTime } from '@/lib/format';
+import { usePulseOnChange } from '@/lib/usePulseOnChange';
 import type { MatchStatus, MatchWithNames } from '@/lib/types';
 import { StatusBadge } from './StatusBadge';
 
@@ -26,6 +29,10 @@ function TeamRow({
   dimmed: boolean;
   isWinner: boolean;
 }) {
+  // Es dispara quan el marcador canvia (arribada per Realtime), no en el
+  // primer render: així no parpelleja tota la pàgina en carregar-la.
+  const justScored = usePulseOnChange(score);
+
   return (
     <div className="flex items-center gap-2.5">
       {logoUrl ? (
@@ -59,7 +66,7 @@ function TeamRow({
             : dimmed
               ? 'text-violet-400'
               : 'text-violet-950'
-        }`}
+        } ${justScored ? 'inline-block animate-score-pop text-acid-600' : ''}`}
       >
         {showScore ? score : '–'}
       </span>
@@ -81,6 +88,12 @@ export function MatchCard({
   const homeWins = finished && match.home_score > match.away_score;
   const awayWins = finished && match.away_score > match.home_score;
 
+  // Flaix suau a tota la targeta quan es mou el marcador d'un partit en joc,
+  // perquè es noti encara que l'usuari no tingués la vista fixada aquí.
+  const scoreKey = `${match.home_score}-${match.away_score}`;
+  const justUpdated = usePulseOnChange(scoreKey);
+  const flash = justUpdated && match.status === 'en_juego';
+
   const meta = [
     showCourt ? match.court?.name : null,
     showCategory ? CATEGORY_LABEL[match.category] : null,
@@ -89,7 +102,9 @@ export function MatchCard({
 
   return (
     <article
-      className={`panel border-l-4 px-3.5 py-3 ${ACCENT[match.status]}`}
+      className={`panel border-l-4 px-3.5 py-3 ${ACCENT[match.status]} ${
+        flash ? 'animate-card-flash' : ''
+      }`}
     >
       <div className="mb-2 flex items-baseline justify-between gap-2">
         <p className="flex min-w-0 items-baseline gap-2">

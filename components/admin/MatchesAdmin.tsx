@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useMemo, useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { CATEGORIES, CATEGORY_LABEL, TOURNAMENT } from '@/lib/constants';
-import { formatTime, fromDatetimeLocal, toDatetimeLocal } from '@/lib/format';
+import { formatTime, fromTimeInput, toTimeInput } from '@/lib/format';
 import type {
   Category,
   Court,
@@ -19,7 +19,7 @@ import { ErrorNote, SectionCard } from './Feedback';
 const emptyForm = () => ({
   category: CATEGORIES[0].value as Category,
   court_id: '',
-  starts_at: `${TOURNAMENT.date}T09:00`,
+  starts_at: '09:00',
   home_team_id: '',
   away_team_id: '',
   round: '',
@@ -57,7 +57,7 @@ export function MatchesAdmin({
     setForm({
       category: match.category,
       court_id: match.court_id ?? '',
-      starts_at: toDatetimeLocal(match.starts_at),
+      starts_at: toTimeInput(match.starts_at),
       home_team_id: match.home_team_id,
       away_team_id: match.away_team_id,
       round: match.round ?? '',
@@ -79,7 +79,7 @@ export function MatchesAdmin({
     const payload = {
       category: form.category,
       court_id: form.court_id || null,
-      starts_at: fromDatetimeLocal(form.starts_at),
+      starts_at: fromTimeInput(form.starts_at, TOURNAMENT.date),
       home_team_id: form.home_team_id,
       away_team_id: form.away_team_id,
       round: form.round.trim() || null,
@@ -221,18 +221,22 @@ export function MatchesAdmin({
           <div className="grid gap-3 sm:grid-cols-2">
             <div>
               <label className="label" htmlFor="match-time">
-                Data i hora
+                Hora
               </label>
               <input
                 id="match-time"
-                type="datetime-local"
+                type="time"
                 required
+                step={300}
                 value={form.starts_at}
                 onChange={(e) =>
                   setForm({ ...form, starts_at: e.target.value })
                 }
                 className="input"
               />
+              <p className="mt-1 text-xs text-violet-500">
+                {TOURNAMENT.dateLabel}
+              </p>
             </div>
             <div>
               <label className="label" htmlFor="match-round">

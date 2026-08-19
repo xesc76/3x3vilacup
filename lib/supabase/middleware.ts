@@ -1,5 +1,6 @@
 import { createServerClient, type CookieOptions } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
+import { fetchWithTimeout } from './fetchWithTimeout';
 
 type CookieToSet = { name: string; value: string; options?: CookieOptions };
 
@@ -14,6 +15,7 @@ export async function updateSession(request: NextRequest) {
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
+      global: { fetch: fetchWithTimeout },
       cookies: {
         getAll() {
           return request.cookies.getAll();
@@ -33,9 +35,18 @@ export async function updateSession(request: NextRequest) {
 
   // getUser() valida el token contra Supabase. No facis servir getSession()
   // per prendre decisions d'autorització: no verifica la signatura.
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  //
+  // Aquest middleware s'executa a cada petició, també les del web públic.
+  // Si Supabase no respon, cau al cas "sense sessió" en lloc de trencar
+  // totes les pàgines: com a molt, un admin no pot entrar durant la
+  // incidència, però el públic segueix veient horaris i resultats.
+  let user = null;
+  try {
+    const { data } = await supabase.auth.getUser();
+    user = data.user;
+  } catch (error) {
+    console.error('No s’ha pogut validar la sessió', error);
+  }
 
   const { pathname } = request.nextUrl;
   const isLoginPage = pathname === '/admin/login';

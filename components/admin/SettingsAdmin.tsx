@@ -13,6 +13,7 @@ export function SettingsAdmin({ settings }: { settings: Settings | null }) {
   const [photosUrl, setPhotosUrl] = useState(
     settings?.default_photos_url ?? ''
   );
+  const [rulesUrl, setRulesUrl] = useState(settings?.rules_url ?? '');
   const [message, setMessage] = useState(settings?.live_message ?? '');
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
@@ -27,6 +28,7 @@ export function SettingsAdmin({ settings }: { settings: Settings | null }) {
     const { error } = await supabase.from('settings').upsert({
       id: 1,
       default_photos_url: photosUrl.trim() || null,
+      rules_url: rulesUrl.trim() || null,
       live_message: message.trim() || null,
     });
 
@@ -57,6 +59,25 @@ export function SettingsAdmin({ settings }: { settings: Settings | null }) {
               És l’àlbum que veurà la gent des de qualsevol pista que no tingui
               àlbum propi. A Google Photos: obre l’àlbum → Compartir → Crear
               enllaç, i enganxa’l aquí.
+            </p>
+          </div>
+
+          <div>
+            <label className="label" htmlFor="rules">
+              Normativa i bases de competició
+            </label>
+            <input
+              id="rules"
+              type="url"
+              value={rulesUrl}
+              onChange={(e) => setRulesUrl(e.target.value)}
+              placeholder="https://…"
+              className="input"
+            />
+            <p className="mt-1 text-xs text-violet-500">
+              Enllaç al PDF o document amb la normativa. Puja’l a Google Drive
+              i comparteix-lo amb «qualsevol amb l’enllaç». Si ho deixes buit,
+              el botó no apareix al web.
             </p>
           </div>
 

@@ -2,6 +2,8 @@ import Image from 'next/image';
 import Link from 'next/link';
 import logo from '@/public/logo.jpg';
 import { TOURNAMENT } from '@/lib/constants';
+import { createClient } from '@/lib/supabase/server';
+import type { Settings } from '@/lib/types';
 import { SiteNav } from './SiteNav';
 
 export function Wordmark({ size = 40 }: { size?: number }) {
@@ -43,12 +45,33 @@ export function SiteHeader() {
   );
 }
 
-export function SiteFooter() {
+export async function SiteFooter() {
+  // La normativa es configura des de l'admin; si no n'hi ha, no surt el botó.
+  const supabase = createClient();
+  const { data } = await supabase
+    .from('settings')
+    .select('rules_url')
+    .eq('id', 1)
+    .maybeSingle();
+  const rulesUrl = (data as Pick<Settings, 'rules_url'> | null)?.rules_url;
+
   return (
     <footer className="mt-16 bg-violet-950 text-violet-300">
       <div className="brand-rule" />
       <div className="mx-auto max-w-3xl px-4 py-10">
         <Wordmark size={48} />
+
+        {rulesUrl && (
+          <a
+            href={rulesUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="btn-acid mt-6 w-full"
+          >
+            Normativa i bases de competició
+          </a>
+        )}
+
         <dl className="mt-6 space-y-1 text-sm">
           <div className="flex gap-2">
             <dt className="sr-only">Data</dt>

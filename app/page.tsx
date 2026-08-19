@@ -4,10 +4,11 @@ import logo from '@/public/logo.jpg';
 import { createClient } from '@/lib/supabase/server';
 import { fetchMatches } from '@/lib/queries';
 import { CATEGORIES, TOURNAMENT } from '@/lib/constants';
-import type { Court, Settings, Sponsor } from '@/lib/types';
+import type { Announcement, Court, Settings, Sponsor } from '@/lib/types';
 import { SiteFooter, SiteHeader } from '@/components/SiteChrome';
 import { SponsorsGrid } from '@/components/SponsorsGrid';
 import { MatchCard } from '@/components/MatchCard';
+import { LatestAnnouncement } from '@/components/LatestAnnouncement';
 import { ArrowIcon, PinIcon } from '@/components/Icons';
 
 export const revalidate = 0;
@@ -15,20 +16,29 @@ export const revalidate = 0;
 export default async function HomePage() {
   const supabase = createClient();
 
-  const [matches, courtsRes, sponsorsRes, settingsRes] = await Promise.all([
-    fetchMatches(supabase).catch(() => []),
-    supabase.from('courts').select('*').order('sort_order'),
-    supabase
-      .from('sponsors')
-      .select('*')
-      .eq('active', true)
-      .order('sort_order'),
-    supabase.from('settings').select('*').eq('id', 1).maybeSingle(),
-  ]);
+  const [matches, courtsRes, sponsorsRes, settingsRes, announcementRes] =
+    await Promise.all([
+      fetchMatches(supabase).catch(() => []),
+      supabase.from('courts').select('*').order('sort_order'),
+      supabase
+        .from('sponsors')
+        .select('*')
+        .eq('active', true)
+        .order('sort_order'),
+      supabase.from('settings').select('*').eq('id', 1).maybeSingle(),
+      supabase
+        .from('announcements')
+        .select('*')
+        .eq('published', true)
+        .order('published_at', { ascending: false })
+        .limit(1)
+        .maybeSingle(),
+    ]);
 
   const courts = (courtsRes.data ?? []) as Court[];
   const sponsors = (sponsorsRes.data ?? []) as Sponsor[];
   const settings = settingsRes.data as Settings | null;
+  const latestAnnouncement = announcementRes.data as Announcement | null;
 
   const playing = matches.filter((m) => m.status === 'en_juego');
   const next = matches.filter((m) => m.status === 'programado').slice(0, 3);
@@ -116,6 +126,8 @@ export default async function HomePage() {
               {settings.live_message}
             </p>
           )}
+
+          <LatestAnnouncement announcement={latestAnnouncement} />
 
           {playing.length > 0 && (
             <section className="mb-10">

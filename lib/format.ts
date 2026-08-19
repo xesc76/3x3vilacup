@@ -17,8 +17,21 @@ const dayFmt = new Intl.DateTimeFormat('ca-ES', {
   timeZone: TIME_ZONE,
 });
 
+const dateTimeFmt = new Intl.DateTimeFormat('ca-ES', {
+  day: 'numeric',
+  month: 'long',
+  hour: '2-digit',
+  minute: '2-digit',
+  timeZone: TIME_ZONE,
+});
+
 export function formatTime(iso: string) {
   return timeFmt.format(new Date(iso));
+}
+
+/** "23 d'agost, 10:30" — per als comunicats. */
+export function formatDateTime(iso: string) {
+  return dateTimeFmt.format(new Date(iso));
 }
 
 export function formatDay(iso: string) {
@@ -36,6 +49,20 @@ export function toDatetimeLocal(iso: string) {
     timeZone: TIME_ZONE,
   }).format(new Date(iso));
   return parts.replace(' ', 'T');
+}
+
+/**
+ * ISO -> valor per a un <input type="time"> ("09:30") en hora de Vilafranca.
+ * El torneig és tot en un sol dia, així que als formularis només es demana
+ * l'hora i la data la posa TOURNAMENT.date.
+ */
+export function toTimeInput(iso: string) {
+  return toDatetimeLocal(iso).slice(11, 16);
+}
+
+/** "09:30" + data del torneig -> ISO UTC. */
+export function fromTimeInput(time: string, date: string) {
+  return fromDatetimeLocal(`${date}T${time}`);
 }
 
 /** Valor d'un <input type="datetime-local"> -> ISO UTC, interpretant-lo com a hora de Vilafranca. */

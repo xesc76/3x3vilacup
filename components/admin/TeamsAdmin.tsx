@@ -1,9 +1,9 @@
-﻿'use client';
+'use client';
 
 import { useRouter } from 'next/navigation';
 import { useMemo, useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
-import { CATEGORIES, CATEGORY_LABEL } from '@/lib/constants';
+import { CATEGORIES, CATEGORY_LABEL, GROUP_OPTIONS } from '@/lib/constants';
 import type { Category, Team } from '@/lib/types';
 import { FilterChips } from '@/components/FilterChips';
 import { ErrorNote, SectionCard } from './Feedback';
@@ -11,6 +11,7 @@ import { ErrorNote, SectionCard } from './Feedback';
 const EMPTY = {
   name: '',
   category: CATEGORIES[0].value as Category,
+  group_name: '',
   logo_url: '',
 };
 
@@ -23,6 +24,8 @@ export function TeamsAdmin({ teams }: { teams: Team[] }) {
   const [filter, setFilter] = useState<Category | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  /** Equips amb el grup desant-se ara mateix, per no doblar el clic. */
+  const [savingGroup, setSavingGroup] = useState<string | null>(null);
 
   const visible = filter ? teams.filter((t) => t.category === filter) : teams;
 
@@ -37,6 +40,7 @@ export function TeamsAdmin({ teams }: { teams: Team[] }) {
     setForm({
       name: team.name,
       category: team.category,
+      group_name: team.group_name ?? '',
       logo_url: team.logo_url ?? '',
     });
     setError(null);
@@ -51,6 +55,7 @@ export function TeamsAdmin({ teams }: { teams: Team[] }) {
     const payload = {
       name: form.name.trim(),
       category: form.category,
+      group_name: form.group_name.trim() || null,
       logo_url: form.logo_url.trim() || null,
     };
 
@@ -67,9 +72,29 @@ export function TeamsAdmin({ teams }: { teams: Team[] }) {
       );
     }
 
-    // Després de crear volem seguir afegint equips de la mateixa categoria.
+    // Després de crear volem seguir afegint equips de la mateixa categoria
+    // i del mateix grup: així es carrega un grup sencer de seguida.
     setEditingId(null);
-    setForm({ ...EMPTY, category: payload.category });
+    setForm({
+      ...EMPTY,
+      category: payload.category,
+      group_name: form.group_name,
+    });
+    router.refresh();
+  }
+
+  /** Assignació ràpida de grup des de la llista, sense obrir el formulari. */
+  async function handleGroupChange(team: Team, value: string) {
+    setSavingGroup(team.id);
+    setError(null);
+
+    const { error } = await supabase
+      .from('teams')
+      .update({ group_name: value || null })
+      .eq('id', team.id);
+
+    setSavingGroup(null);
+    if (error) return setError(error.message);
     router.refresh();
   }
 
@@ -124,18 +149,40 @@ export function TeamsAdmin({ teams }: { teams: Team[] }) {
             </div>
           </div>
 
-          <div>
-            <label className="label" htmlFor="team-logo">
-              URL de l’escut (opcional)
-            </label>
-            <input
-              id="team-logo"
-              type="url"
-              value={form.logo_url}
-              onChange={(e) => setForm({ ...form, logo_url: e.target.value })}
-              placeholder="https://…"
-              className="input"
-            />
+          <div className="grid gap-3 sm:grid-cols-[120px_1fr]">
+            <div>
+              <label className="label" htmlFor="team-group">
+                Grup
+              </label>
+              <select
+                id="team-group"
+                value={form.group_name}
+                onChange={(e) =>
+                  setForm({ ...form, group_name: e.target.value })
+                }
+                className="input"
+              >
+                <option value="">— Cap —</option>
+                {GROUP_OPTIONS.map((g) => (
+                  <option key={g} value={g}>
+                    Grup {g}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="label" htmlFor="team-logo">
+                URL de l’escut (opcional)
+              </label>
+              <input
+                id="team-logo"
+                type="url"
+                value={form.logo_url}
+                onChange={(e) => setForm({ ...form, logo_url: e.target.value })}
+                placeholder="https://…"
+                className="input"
+              />
+            </div>
           </div>
 
           <ErrorNote error={error} />
@@ -166,6 +213,11 @@ export function TeamsAdmin({ teams }: { teams: Team[] }) {
         ]}
       />
 
+      <p className="text-xs text-violet-500">
+        Pots canviar el grup de cada equip directament des de la llista: es
+        desa tot sol.
+      </p>
+
       <div className="space-y-2">
         {visible.length === 0 && (
           <p className="panel p-6 text-center text-sm text-violet-500">
@@ -193,6 +245,25 @@ export function TeamsAdmin({ teams }: { teams: Team[] }) {
                 {CATEGORY_LABEL[team.category]}
               </p>
             </div>
+
+            <label className="sr-only" htmlFor={`group-${team.id}`}>
+              Grup de {team.name}
+            </label>
+            <select
+              id={`group-${team.id}`}
+              value={team.group_name ?? ''}
+              disabled={savingGroup === team.id}
+              onChange={(e) => handleGroupChange(team, e.target.value)}
+              className="shrink-0 rounded-sm border border-violet-200 bg-white px-2 py-1.5 font-display text-sm uppercase tracking-wide text-violet-800 disabled:opacity-50"
+            >
+              <option value="">Sense grup</option>
+              {GROUP_OPTIONS.map((g) => (
+                <option key={g} value={g}>
+                  Grup {g}
+                </option>
+              ))}
+            </select>
+
             <button
               type="button"
               onClick={() => startEdit(team)}

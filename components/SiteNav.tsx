@@ -6,6 +6,10 @@ import { usePathname } from 'next/navigation';
 const NAV = [
   { href: '/horaris', label: 'Horaris' },
   { href: '/classificacio', label: 'Classificació' },
+  { href: '/quadre', label: 'Quadre' },
+  { href: '/el-meu-equip', label: 'El meu equip' },
+  { href: '/comunicats', label: 'Comunicats' },
+  { href: '/triples', label: 'Triples' },
   { href: '/pistes', label: 'Pistes' },
 ];
 

@@ -35,9 +35,20 @@ export const STATUS_LABEL: Record<MatchStatus, string> = {
   finalizado: 'Finalitzat',
 };
 
-/**
- * Punts de classificació. Per defecte, reglament FIBA 3x3:
- * victòria = 2, derrota = 1. Canvia aquí si el torneig fa servir 3/0.
- */
-export const POINTS_WIN = 2;
-export const POINTS_LOSS = 1;
+/** Grups possibles dins d'una categoria. */
+export const GROUP_OPTIONS = ['A', 'B', 'C', 'D', 'E', 'F'] as const;
+
+/** Noms de ronda suggerits en crear el quadre de play-off. */
+export const ROUND_PRESETS = [
+  'Setzens de final',
+  'Vuitens de final',
+  'Quarts de final',
+  'Semifinals',
+  'Final',
+  '3r i 4t lloc',
+] as const;
+
+export const TRIPLES_DIVISIONS: { value: 'noi' | 'noia'; label: string }[] = [
+  { value: 'noi', label: 'Nois' },
+  { value: 'noia', label: 'Noies' },
+];

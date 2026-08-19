@@ -49,9 +49,25 @@ const config: Config = {
           '0%, 100%': { opacity: '1' },
           '50%': { opacity: '0.2' },
         },
+        'score-pop': {
+          '0%': { transform: 'scale(1)' },
+          '30%': { transform: 'scale(1.35)' },
+          '100%': { transform: 'scale(1)' },
+        },
+        'card-flash': {
+          '0%': { backgroundColor: 'rgb(230 239 12 / 0.35)' },
+          '100%': { backgroundColor: 'rgb(230 239 12 / 0)' },
+        },
+        'enter-up': {
+          '0%': { opacity: '0', transform: 'translateY(6px)' },
+          '100%': { opacity: '1', transform: 'translateY(0)' },
+        },
       },
       animation: {
         blink: 'blink 1.1s steps(1, end) infinite',
+        'score-pop': 'score-pop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)',
+        'card-flash': 'card-flash 1.1s ease-out',
+        'enter-up': 'enter-up 0.35s ease-out',
       },
     },
   },
