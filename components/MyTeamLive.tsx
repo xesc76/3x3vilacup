@@ -56,6 +56,15 @@ export function MyTeamLive({
 
   const played = myMatches.filter((m) => m.status === 'finalizado').length;
 
+  // Posició dins del seu grup (1-based). Null si encara no ha jugat res.
+  const position = useMemo(() => {
+    if (!team || !myStandings) return null;
+    const index = myStandings.rows.findIndex((r) => r.teamId === team.id);
+    return index === -1 ? null : index + 1;
+  }, [team, myStandings]);
+
+  const myRow = myStandings?.rows.find((r) => r.teamId === team?.id) ?? null;
+
   return (
     <div className="space-y-5">
       <FilterChips
@@ -111,6 +120,29 @@ export function MyTeamLive({
             </p>
             <LiveIndicator live={live} />
           </div>
+
+          {position && myRow && (
+            <div className="flex items-center gap-4 border-l-4 border-acid-400 bg-acid-50 px-4 py-3.5">
+              <span className="font-display text-5xl leading-none tabular-nums text-violet-950">
+                {position}
+                <span className="text-2xl">
+                  {position === 1 ? 'r' : position === 2 ? 'n' : position === 3 ? 'r' : 't'}
+                </span>
+              </span>
+              <span className="min-w-0">
+                <span className="block font-display text-lg uppercase leading-tight tracking-wide text-violet-950">
+                  {myStandings?.group
+                    ? `del Grup ${myStandings.group}`
+                    : 'de la classificació'}
+                </span>
+                <span className="mt-0.5 block text-sm text-violet-600">
+                  {myRow.won} {myRow.won === 1 ? 'victòria' : 'victòries'} ·{' '}
+                  {myRow.lost} {myRow.lost === 1 ? 'derrota' : 'derrotes'} ·{' '}
+                  {myRow.pointsFor} punts a favor
+                </span>
+              </span>
+            </div>
+          )}
 
           <section>
             <h2 className="eyebrow mb-2.5 text-violet-950">

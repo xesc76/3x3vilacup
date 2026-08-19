@@ -11,6 +11,11 @@ import {
 } from '@/lib/constants';
 import { fromTimeInput } from '@/lib/format';
 import {
+  BRACKET_SIZES,
+  generateBracket,
+  type BracketSize,
+} from '@/lib/bracketGenerator';
+import {
   bracketByRound,
   propagateWinner,
   resolveGroupPositions,
@@ -49,6 +54,7 @@ export function PlayoffAdmin({
 
   const [category, setCategory] = useState<Category>(CATEGORIES[0].value);
   const [newRound, setNewRound] = useState<string>(ROUND_PRESETS[2]);
+  const [bracketSize, setBracketSize] = useState<BracketSize>(4);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
@@ -60,6 +66,115 @@ export function PlayoffAdmin({
   const categoryMatches = playoffMatches.filter((m) => roundIds.has(m.round_id));
   const categoryTeams = teams.filter((t) => t.category === category);
   const bracket = bracketByRound(categoryRounds, categoryMatches);
+
+  /**
+   * Crea el quadre sencer d'un cop: rondes, creuaments i els enllaços de
+   * "guanyador de". Substitueix el que hi hagi a la categoria.
+   */
+  async function autoGenerate() {
+    const label = CATEGORY_LABEL[category];
+    if (
+      !confirm(
+        `Generar el quadre de ${label} per als ${bracketSize} millors?\n\n` +
+          (categoryRounds.length > 0
+            ? 'AVÍS: s’esborrarà el quadre que ja hi ha en aquesta categoria.'
+            : 'Després podràs ajustar hora i pista de cada creuament.')
+      )
+    )
+      return;
+
+    setBusy(true);
+    setError(null);
+
+    // Fora el quadre anterior (els creuaments cauen en cascada).
+    if (categoryRounds.length > 0) {
+      const { error } = await supabase
+        .from('playoff_rounds')
+        .delete()
+        .in(
+          'id',
+          categoryRounds.map((r) => r.id)
+        );
+      if (error) {
+        setBusy(false);
+        return setError(error.message);
+      }
+    }
+
+    const groups = Array.from(
+      new Set(categoryTeams.map((t) => t.group_name ?? null))
+    ).sort((a, b) => (a ?? '').localeCompare(b ?? '', 'ca'));
+
+    const spec = generateBracket(groups, bracketSize);
+
+    // Cal crear ronda a ronda per poder enllaçar els "guanyador de" amb els
+    // identificadors reals dels creuaments ja creats.
+    const createdMatchIds: string[][] = [];
+
+    for (const [roundIndex, round] of spec.entries()) {
+      const { data: roundRow, error: roundError } = await supabase
+        .from('playoff_rounds')
+        .insert({ category, name: round.name, sort_order: roundIndex })
+        .select('id')
+        .single();
+
+      if (roundError || !roundRow) {
+        setBusy(false);
+        return setError(roundError?.message ?? 'No s’ha pogut crear la ronda.');
+      }
+
+      const rows = round.matches.map((m) => {
+        const side = (slot: (typeof m)['home']) =>
+          slot.source === 'group_position'
+            ? {
+                source: 'group_position' as const,
+                group: slot.group,
+                rank: slot.rank,
+                from: null as string | null,
+              }
+            : {
+                source: 'winner' as const,
+                group: null,
+                rank: null,
+                from: createdMatchIds[slot.roundIndex]?.[slot.slot] ?? null,
+              };
+
+        const home = side(m.home);
+        const away = side(m.away);
+
+        return {
+          round_id: roundRow.id,
+          slot: m.slot,
+          home_source: home.source,
+          home_group: home.group,
+          home_rank: home.rank,
+          home_from_match: home.from,
+          away_source: away.source,
+          away_group: away.group,
+          away_rank: away.rank,
+          away_from_match: away.from,
+        };
+      });
+
+      const { data: matchRows, error: matchError } = await supabase
+        .from('playoff_matches')
+        .insert(rows)
+        .select('id, slot');
+
+      if (matchError || !matchRows) {
+        setBusy(false);
+        return setError(
+          matchError?.message ?? 'No s’han pogut crear els creuaments.'
+        );
+      }
+
+      const ordered = [...matchRows].sort((a, b) => a.slot - b.slot);
+      createdMatchIds[roundIndex] = ordered.map((r) => r.id);
+    }
+
+    setBusy(false);
+    router.refresh();
+  }
 
   async function addRound() {
     const name = newRound.trim();
@@ -319,8 +434,59 @@ export function PlayoffAdmin({
       <ErrorNote error={error} />
 
       {!active && (
+        <div className="panel border-l-4 border-l-acid-400 p-3.5">
+          <p className="font-display text-lg uppercase tracking-wide text-violet-950">
+            Generar el quadre automàticament
+          </p>
+          <p className="mb-3 mt-1 text-sm text-violet-600">
+            Tria quants equips passen i es crea tot el quadre fet: rondes,
+            creuaments i els enllaços de «guanyador de». Els emparellaments
+            surten estàndard (1r contra últim) i, si hi ha més d’un grup, ja
+            van creuats.
+          </p>
+
+          <div className="flex flex-wrap items-end gap-2">
+            <div>
+              <label className="label" htmlFor="bracket-size">
+                Equips que passen
+              </label>
+              <select
+                id="bracket-size"
+                value={bracketSize}
+                onChange={(e) =>
+                  setBracketSize(Number(e.target.value) as BracketSize)
+                }
+                className="input"
+              >
+                {BRACKET_SIZES.map((size) => (
+                  <option key={size} value={size}>
+                    {size} equips
+                    {size > categoryTeams.length ? ' (no n’hi ha prou)' : ''}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <button
+              type="button"
+              onClick={autoGenerate}
+              disabled={busy || categoryTeams.length < 2}
+              className="btn-acid"
+            >
+              {busy ? 'Generant…' : 'Generar quadre'}
+            </button>
+          </div>
+
+          <p className="mt-2 text-xs text-violet-500">
+            {categoryTeams.length} equips a {CATEGORY_LABEL[category]}
+            {categoryRounds.length > 0 &&
+              ' · generar-lo de nou substituirà el quadre actual'}
+          </p>
+        </div>
+      )}
+
+      {!active && (
         <div className="panel p-3.5">
-          <p className="label">Nova ronda</p>
+          <p className="label">O crear una ronda a mà</p>
           <div className="flex flex-wrap gap-2">
             <input
               list="round-presets"

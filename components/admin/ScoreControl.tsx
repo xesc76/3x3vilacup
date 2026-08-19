@@ -141,8 +141,9 @@ export function ScoreControl({ match }: { match: MatchWithNames }) {
       <p className="my-2 text-center font-display text-7xl leading-none tabular-nums text-violet-950">
         {score}
       </p>
-      <div className="grid grid-cols-3 gap-2">
-        {[1, 2, 3].map((points) => (
+      {/* En 3x3 les cistelles són d'1 i de 2 punts: no hi ha triple. */}
+      <div className="grid grid-cols-2 gap-2">
+        {[1, 2].map((points) => (
           <button
             key={points}
             type="button"
