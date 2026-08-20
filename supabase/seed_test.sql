@@ -1,13 +1,16 @@
 -- =====================================================================
--- Vila Cup 3x3 — DADES DE PROVA
+-- 3x3vilacup — DADES DE PROVA
 --
 -- Omple el torneig sencer per poder-ho veure tot funcionant: 30 equips
 -- repartits en grups, 36 partits (acabats, en joc i per jugar), quadre de
--- play-off, comunicats, concurs de triples i patrocinadors.
+-- play-off, comunicats, concurs de triples (amb cistella petita) i
+-- col·laboradors dels tres nivells.
 --
--- ⚠️  ESBORRA tots els equips, partits, comunicats, triples, patrocinadors
---     i quadres que hi hagi ara. Les pistes, els administradors i la
---     configuració no es toquen (la configuració s'actualitza).
+-- ⚠️  Requereix haver executat abans les migracions 0001, 0002 i 0003.
+--
+-- ⚠️  ESBORRA els equips, partits, comunicats, triples i quadres que hi hagi
+--     ara. NO toca els col·laboradors (si ja en tens de reals, es queden),
+--     ni les pistes ni els administradors.
 --
 --     Executa'l a: Supabase Dashboard > SQL Editor > New query
 --     Quan vulguis començar de zero per al torneig de veritat, fes servir
@@ -26,7 +29,9 @@ delete from public.matches;
 delete from public.teams;            -- també esborraria partits en cascada
 delete from public.announcements;
 delete from public.triples_results;
-delete from public.sponsors;
+
+-- Els col·laboradors NO es toquen: si ja n'hi ha de reals introduïts des de
+-- l'admin, esborrar-los voldria dir tornar a picar noms i logotips a mà.
 
 -- Assegura que hi ha les tres pistes (si ja hi són, no fa res).
 insert into public.courts (name, sort_order)
@@ -203,8 +208,8 @@ select
 insert into public.announcements (title, body, published, published_at)
 values
   (
-    'Benvinguts a la 4a Vila Cup 3x3!',
-    E'Bon dia a tothom!\n\nAvui comencem la quarta edició de la Vila Cup 3x3 al Pavelló Poliesportiu Nou (La Gamba).\n\nRecordeu:\n· Presenteu-vos a la taula 15 minuts abans del vostre partit.\n· Cada equip ha de portar dues equipacions de colors diferents.\n· L''aigua i el servei de bar són a l''entrada principal.\n\nBon torneig i molta sort a tots!',
+    'Benvinguts a la 4a edició del 3x3vilacup!',
+    E'Bon dia a tothom!\n\nAvui comencem la quarta edició del 3x3vilacup al Pavelló Poliesportiu Nou (La Gamba).\n\nRecordeu:\n· Presenteu-vos a la taula 15 minuts abans del vostre partit.\n· Cada equip ha de portar dues equipacions de colors diferents.\n· L''aigua i el servei de bar són a l''entrada principal.\n\nBon torneig i molta sort a tots!',
     true,
     '2026-08-23 08:30:00+02'
   ),
@@ -229,31 +234,48 @@ values
 
 -- ---------- 5. Concurs de triples ------------------------------------
 
-insert into public.triples_results (division, participant, club, score)
+insert into public.triples_results (division, participant, club, score, small_basket)
 values
-  ('noi',  'Marc Solé',        'Vilafranca',    14),
-  ('noi',  'Pau Ferrer',       'Vilanova',      12),
-  ('noi',  'Jan Torres',       'Sant Sadurní',  11),
-  ('noi',  'Arnau Ribas',      'Gelida',         9),
-  ('noi',  'Biel Mestre',      'Olèrdola',       7),
-  ('noi',  'Nil Casas',        'Els Monjos',     6),
-  ('noia', 'Júlia Roca',       'Vilafranca',    13),
-  ('noia', 'Ona Vidal',        'Sitges',        12),
-  ('noia', 'Laia Puig',        'Vilanova',      10),
-  ('noia', 'Emma Soler',       'Calafell',       8),
-  ('noia', 'Carla Bosch',      'Cubelles',       7),
-  ('noia', 'Aina Serra',       'El Vendrell',    5);
+  -- Cistella normal
+  ('noi',  'Marc Solé',        'Vilafranca',    14, false),
+  ('noi',  'Pau Ferrer',       'Vilanova',      12, false),
+  ('noi',  'Jan Torres',       'Sant Sadurní',  11, false),
+  ('noi',  'Arnau Ribas',      'Gelida',         9, false),
+  ('noi',  'Biel Mestre',      'Olèrdola',       7, false),
+  ('noi',  'Nil Casas',        'Els Monjos',     6, false),
+  ('noia', 'Júlia Roca',       'Vilafranca',    13, false),
+  ('noia', 'Ona Vidal',        'Sitges',        12, false),
+  ('noia', 'Laia Puig',        'Vilanova',      10, false),
+  ('noia', 'Emma Soler',       'Calafell',       8, false),
+  ('noia', 'Carla Bosch',      'Cubelles',       7, false),
+  ('noia', 'Aina Serra',       'El Vendrell',    5, false),
+  -- Cistella petita (els més menuts, rànquing a part)
+  ('noi',  'Roc Miró',         'Vilafranca',     9, true),
+  ('noi',  'Guim Alsina',      'La Granada',     7, true),
+  ('noi',  'Ferran Batlle',    'Gelida',         5, true),
+  ('noia', 'Mar Bertran',      'Vilanova',       8, true),
+  ('noia', 'Núria Cortès',     'Olèrdola',       6, true),
+  ('noia', 'Blanca Rovira',    'Sant Sadurní',   4, true);
 
 -- ---------- 6. Patrocinadors -----------------------------------------
 -- Logotips de mostra. Substitueix-los pels de veritat des de l'admin.
 
-insert into public.sponsors (name, logo_url, website_url, sort_order, active)
-values
-  ('Ajuntament de Vilafranca', 'https://placehold.co/240x100/2E0757/FFFFFF/png?text=Ajuntament', 'https://www.vilafranca.cat', 1, true),
-  ('Consell Comarcal',         'https://placehold.co/240x100/8B2BE8/FFFFFF/png?text=Consell',    null,                        2, true),
-  ('Caixa del Penedès',        'https://placehold.co/240x100/E6EF0C/2E0757/png?text=Caixa',      null,                        3, true),
-  ('Esports Vila',             'https://placehold.co/240x100/4B0F85/FFFFFF/png?text=Esports',    null,                        4, true),
-  ('Bar La Cistella',          'https://placehold.co/240x100/CBD400/2E0757/png?text=La+Cistella', null,                       5, true);
+-- Només s'afegeixen si la taula és buida. Si ja tens els col·laboradors de
+-- veritat, això no fa res i els teus es queden tal com estan.
+insert into public.sponsors (name, logo_url, website_url, tier, sort_order, active)
+select v.name, v.logo_url, v.website_url, v.tier::public.sponsor_tier, v.sort_order, true
+from (values
+  -- Nivell 1: logotip gran, a dalt de tot
+  ('Ajuntament de Vilafranca', 'https://placehold.co/320x120/2E0757/FFFFFF/png?text=Ajuntament', 'https://www.vilafranca.cat', 'principal',    1),
+  -- Nivell 2: mida mitjana
+  ('Consell Comarcal',         'https://placehold.co/240x100/8B2BE8/FFFFFF/png?text=Consell',     null, 'collaborador', 2),
+  ('Caixa del Penedès',        'https://placehold.co/240x100/E6EF0C/2E0757/png?text=Caixa',       null, 'collaborador', 3),
+  -- Nivell 3: logotips petits
+  ('Esports Vila',             'https://placehold.co/200x80/4B0F85/FFFFFF/png?text=Esports',      null, 'patrocinador', 4),
+  ('Bar La Cistella',          'https://placehold.co/200x80/CBD400/2E0757/png?text=La+Cistella',  null, 'patrocinador', 5),
+  ('Forn del Passeig',         'https://placehold.co/200x80/6417AE/FFFFFF/png?text=Forn',         null, 'patrocinador', 6)
+) as v(name, logo_url, website_url, tier, sort_order)
+where not exists (select 1 from public.sponsors);
 
 -- ---------- 7. Configuració ------------------------------------------
 
@@ -289,5 +311,6 @@ commit;
 -- delete from public.teams;
 -- delete from public.announcements;
 -- delete from public.triples_results;
--- delete from public.sponsors;
 -- update public.settings set live_message = null where id = 1;
+-- -- Els col·laboradors només si també els vols treure:
+-- -- delete from public.sponsors;

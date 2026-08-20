@@ -75,7 +75,7 @@ export function QrPosters({ courts }: { courts: Court[] }) {
           <p className="mt-2 rounded-sm bg-amber-50 px-3 py-2 text-sm text-amber-800 ring-1 ring-amber-200">
             Estàs generant QR que apunten al teu ordinador. Abans d’imprimir,
             enganxa aquí l’adreça de Vercel (per exemple{' '}
-            <code>https://vilacup.vercel.app</code>).
+            <code>https://3x3vilacup.vercel.app</code>).
           </p>
         )}
 
@@ -104,8 +104,11 @@ export function QrPosters({ courts }: { courts: Court[] }) {
                 height={64}
                 className="mx-auto rounded-sm"
               />
-              <p className="mt-3 font-display text-xs uppercase tracking-[0.3em] text-acid-400">
-                {TOURNAMENT.name} · {TOURNAMENT.edition}
+              <p className="mt-3 font-display text-sm lowercase tracking-tight text-acid-400">
+                {TOURNAMENT.name}
+                <span className="ml-2 uppercase tracking-[0.3em] text-violet-300">
+                  {TOURNAMENT.edition}
+                </span>
               </p>
               <h2 className="mt-1 text-4xl text-white">{poster.title}</h2>
             </div>

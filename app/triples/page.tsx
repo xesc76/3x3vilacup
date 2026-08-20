@@ -1,7 +1,6 @@
 import type { Metadata } from 'next';
 import { createClient } from '@/lib/supabase/server';
-import { TRIPLES_DIVISIONS } from '@/lib/constants';
-import { sortTriples } from '@/lib/triples';
+import { groupTriples } from '@/lib/triples';
 import type { TriplesResult } from '@/lib/types';
 import { PageShell } from '@/components/SiteChrome';
 
@@ -31,17 +30,18 @@ export default async function TriplesPage() {
         </p>
       ) : (
         <div className="space-y-6">
-          {TRIPLES_DIVISIONS.map((division) => {
-            const rows = sortTriples(
-              results.filter((r) => r.division === division.value)
-            );
-            if (rows.length === 0) return null;
+          {groupTriples(results).map((group) => {
+            const rows = group.rows;
 
             return (
-              <section key={division.value}>
+              <section key={group.key}>
                 <h2 className="eyebrow mb-2.5">
-                  <span className="h-3 w-1 bg-violet-200" />
-                  {division.label}
+                  <span
+                    className={`h-3 w-1 ${
+                      group.smallBasket ? 'bg-acid-400' : 'bg-violet-200'
+                    }`}
+                  />
+                  {group.label}
                 </h2>
 
                 <div className="panel overflow-hidden">

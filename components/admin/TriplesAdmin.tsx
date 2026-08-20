@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation';
 import { useMemo, useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { TRIPLES_DIVISIONS } from '@/lib/constants';
-import { sortTriples } from '@/lib/triples';
+import { groupTriples } from '@/lib/triples';
 import type { TriplesDivision, TriplesResult } from '@/lib/types';
 import { ErrorNote, SectionCard } from './Feedback';
 
@@ -13,6 +13,7 @@ const EMPTY = {
   participant: '',
   club: '',
   score: '',
+  small_basket: false,
 };
 
 export function TriplesAdmin({ results }: { results: TriplesResult[] }) {
@@ -26,7 +27,11 @@ export function TriplesAdmin({ results }: { results: TriplesResult[] }) {
 
   function reset() {
     setEditingId(null);
-    setForm({ ...EMPTY, division: form.division });
+    setForm({
+      ...EMPTY,
+      division: form.division,
+      small_basket: form.small_basket,
+    });
     setError(null);
   }
 
@@ -37,6 +42,7 @@ export function TriplesAdmin({ results }: { results: TriplesResult[] }) {
       participant: item.participant,
       club: item.club ?? '',
       score: String(item.score),
+      small_basket: item.small_basket,
     });
     setError(null);
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -52,6 +58,7 @@ export function TriplesAdmin({ results }: { results: TriplesResult[] }) {
       participant: form.participant.trim(),
       club: form.club.trim() || null,
       score: Number(form.score) || 0,
+      small_basket: form.small_basket,
     };
 
     const { error } = editingId
@@ -64,9 +71,14 @@ export function TriplesAdmin({ results }: { results: TriplesResult[] }) {
     setBusy(false);
     if (error) return setError(error.message);
 
-    // Es va introduint participant rere participant de la mateixa categoria.
+    // Es va introduint participant rere participant de la mateixa categoria
+    // i del mateix tipus de cistella.
     setEditingId(null);
-    setForm({ ...EMPTY, division: payload.division });
+    setForm({
+      ...EMPTY,
+      division: payload.division,
+      small_basket: payload.small_basket,
+    });
     router.refresh();
   }
 
@@ -154,6 +166,22 @@ export function TriplesAdmin({ results }: { results: TriplesResult[] }) {
             </div>
           </div>
 
+          <label className="flex items-center gap-2 text-sm font-medium text-violet-800">
+            <input
+              type="checkbox"
+              checked={form.small_basket}
+              onChange={(e) =>
+                setForm({ ...form, small_basket: e.target.checked })
+              }
+              className="h-4 w-4 rounded border-violet-300 text-violet-600"
+            />
+            Cistella petita
+          </label>
+          <p className="-mt-1 text-xs text-violet-500">
+            Marca-ho si tira a la cistella baixa: tindrà un rànquing a part
+            del dels que tiren a cistella normal.
+          </p>
+
           <ErrorNote error={error} />
 
           <div className="flex gap-2">
@@ -169,23 +197,27 @@ export function TriplesAdmin({ results }: { results: TriplesResult[] }) {
         </form>
       </SectionCard>
 
-      {TRIPLES_DIVISIONS.map((division) => {
-        const rows = sortTriples(
-          results.filter((r) => r.division === division.value)
-        );
+      {groupTriples(results).length === 0 && (
+        <p className="panel p-5 text-center text-sm text-violet-500">
+          Cap participant encara.
+        </p>
+      )}
+
+      {groupTriples(results).map((group) => {
+        const rows = group.rows;
 
         return (
-          <section key={division.value}>
+          <section key={group.key}>
             <h2 className="eyebrow mb-2.5">
-              <span className="h-3 w-1 bg-violet-200" />
-              {division.label}
+              <span
+                className={`h-3 w-1 ${
+                  group.smallBasket ? 'bg-acid-400' : 'bg-violet-200'
+                }`}
+              />
+              {group.label}
             </h2>
 
-            {rows.length === 0 ? (
-              <p className="panel p-5 text-center text-sm text-violet-500">
-                Cap participant encara.
-              </p>
-            ) : (
+            {
               <div className="space-y-2">
                 {rows.map((item, index) => (
                   <div
@@ -225,7 +257,7 @@ export function TriplesAdmin({ results }: { results: TriplesResult[] }) {
                   </div>
                 ))}
               </div>
-            )}
+            }
           </section>
         );
       })}

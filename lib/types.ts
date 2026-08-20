@@ -65,6 +65,8 @@ export type TriplesResult = {
   participant: string;
   club: string | null;
   score: number;
+  /** Els més petits tiren a cistella baixa: rànquing a part. */
+  small_basket: boolean;
   created_at: string;
 };
 
@@ -124,11 +126,15 @@ export type CategoryPlayoff = {
   activated_at: string | null;
 };
 
+/** Nivell de col·laboració, de més a menys aportació. */
+export type SponsorTier = 'principal' | 'collaborador' | 'patrocinador';
+
 export type Sponsor = {
   id: string;
   name: string;
   logo_url: string;
   website_url: string | null;
+  tier: SponsorTier;
   sort_order: number;
   active: boolean;
   created_at: string;

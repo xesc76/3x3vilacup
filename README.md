@@ -1,4 +1,4 @@
-# Vila Cup 3x3 — 4a edició
+# 3x3vilacup — 4a edició
 
 Web del torneig de bàsquet 3x3 de Vilafranca del Penedès.
 Diumenge 23 d'agost de 2026, Pavelló Poliesportiu Nou (La Gamba).
@@ -77,9 +77,11 @@ tres pistes.
 
 ### 5. (Opcional) Dades d'exemple per provar
 
-Executa [`supabase/seed_demo.sql`](supabase/seed_demo.sql) al SQL Editor per
-tenir equips i partits de mentida i poder veure com queda tot. Al final del
-fitxer hi ha les tres línies per esborrar-ho quan tinguis les dades reals.
+Executa [`supabase/seed_test.sql`](supabase/seed_test.sql) al SQL Editor per
+omplir el torneig sencer de mentida: equips en grups, partits en tots els
+estats, quadre de play-off, comunicats, concurs de triples i col·laboradors.
+Al final del fitxer hi ha el bloc per esborrar-ho tot quan tinguis les dades
+reals.
 
 ---
 
@@ -121,10 +123,15 @@ d'aquella pista, els marcadors en directe i el botó de fotos.
 
 ## El dia del torneig
 
-- **Marcadors:** `/admin` → tria el partit → botons grossos `+1 +2 +3` i `−1`.
-  Es desa sol i surt al web públic a l'instant.
+- **Marcadors:** `/admin` → tria el partit → botons grossos `+1` i `+2`, més
+  `−1` per corregir. Es desa sol i surt al web públic a l'instant.
+  (En 3x3 no hi ha triple: per això no hi ha botó de `+3`.)
 - **Estat:** cada partit té *Programat → En joc → Finalitzat*. La classificació
   només compta els finalitzats.
+- **Play-off:** `/admin/playoff` → tria categoria → **Generar quadre** i, quan
+  acabi la fase de grups, **Activar play-off**. A partir d'aquí la fase de
+  grups queda congelada i el guanyador de cada creuament passa sol a la ronda
+  següent.
 - **Diverses persones alhora:** poden entrar amb el mateix usuari des de mòbils
   diferents. Si dues persones toquen el mateix partit, els canvis se
   sincronitzen sols.
@@ -153,16 +160,25 @@ lib/
   standings.ts             càlcul de la classificació
   useLiveMatches.ts        subscripció a Realtime
 supabase/
-  migrations/0001_init.sql esquema + RLS + Realtime
-  seed_demo.sql            dades de prova opcionals
+  migrations/
+    0001_init.sql          esquema base + RLS + Realtime
+    0002_...playoff.sql    grups, comunicats, triples, play-off
+    0003_...petita.sql     nivells de col·laborador, cistella petita
+  seed_test.sql            torneig sencer de mentida per provar-ho tot
 middleware.ts              protegeix /admin i refresca la sessió
 ```
+
+Les migracions s'executen **en ordre** i una sola vegada, al SQL Editor de
+Supabase. Estan escrites per no petar si les tornes a executar.
 
 ### Coses que potser voldràs tocar
 
 - **Dades del torneig** (nom, data, pavelló): `lib/constants.ts`.
-- **Punts de classificació**: `POINTS_WIN` / `POINTS_LOSS` a `lib/constants.ts`.
-  Ara està a victòria = 2, derrota = 1 (reglament FIBA 3x3).
+- **Criteris de classificació**: `lib/standings.ts`. Ara ordena per victòries,
+  després punts a favor i, si segueix l'empat, enfrontament directe (amb
+  mini-lliga si hi ha més de dos equips empatats).
+- **Nivells de col·laborador**: `SPONSOR_TIERS` a `lib/constants.ts` controla
+  el títol de cada secció i la mida dels logotips.
 - **Categories**: `lib/constants.ts` **i** el tipus `category` de la base de
   dades. Per afegir-ne una de nova cal executar també
   `alter type public.category add value 'nova';`.

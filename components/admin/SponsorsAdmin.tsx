@@ -3,13 +3,15 @@
 import { useRouter } from 'next/navigation';
 import { useMemo, useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
-import type { Sponsor } from '@/lib/types';
+import { SPONSOR_TIERS, SPONSOR_TIER_LABEL } from '@/lib/constants';
+import type { Sponsor, SponsorTier } from '@/lib/types';
 import { ErrorNote, SectionCard } from './Feedback';
 
 const EMPTY = {
   name: '',
   logo_url: '',
   website_url: '',
+  tier: 'patrocinador' as SponsorTier,
   active: true,
 };
 
@@ -34,6 +36,7 @@ export function SponsorsAdmin({ sponsors }: { sponsors: Sponsor[] }) {
       name: sponsor.name,
       logo_url: sponsor.logo_url,
       website_url: sponsor.website_url ?? '',
+      tier: sponsor.tier,
       active: sponsor.active,
     });
     setError(null);
@@ -49,6 +52,7 @@ export function SponsorsAdmin({ sponsors }: { sponsors: Sponsor[] }) {
       name: form.name.trim(),
       logo_url: form.logo_url.trim(),
       website_url: form.website_url.trim() || null,
+      tier: form.tier,
       active: form.active,
     };
 
@@ -137,6 +141,30 @@ export function SponsorsAdmin({ sponsors }: { sponsors: Sponsor[] }) {
           </div>
 
           <div>
+            <label className="label" htmlFor="sponsor-tier">
+              Nivell de col·laboració
+            </label>
+            <select
+              id="sponsor-tier"
+              value={form.tier}
+              onChange={(e) =>
+                setForm({ ...form, tier: e.target.value as SponsorTier })
+              }
+              className="input"
+            >
+              {SPONSOR_TIERS.map((t) => (
+                <option key={t.value} value={t.value}>
+                  {t.short}
+                </option>
+              ))}
+            </select>
+            <p className="mt-1 text-xs text-violet-500">
+              Marca la mida del logotip al web: el principal surt el doble de
+              gran que un patrocinador.
+            </p>
+          </div>
+
+          <div>
             <label className="label" htmlFor="sponsor-web">
               Web (opcional)
             </label>
@@ -201,6 +229,7 @@ export function SponsorsAdmin({ sponsors }: { sponsors: Sponsor[] }) {
                 {sponsor.name}
               </p>
               <p className="text-xs text-violet-500">
+                {SPONSOR_TIER_LABEL[sponsor.tier]} ·{' '}
                 {sponsor.active ? 'Visible' : 'Amagat'} · ordre{' '}
                 {sponsor.sort_order}
               </p>

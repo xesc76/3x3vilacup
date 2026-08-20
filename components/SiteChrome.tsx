@@ -18,11 +18,12 @@ export function Wordmark({ size = 40 }: { size?: number }) {
         className="rounded-sm"
       />
       <span className="leading-none">
-        <span className="block font-display text-lg uppercase tracking-tight text-white">
-          Vila Cup
+        {/* La marca va sempre tot junt i en minúscules. */}
+        <span className="block font-display text-xl lowercase tracking-tight text-white">
+          3x3<span className="text-acid-400">vilacup</span>
         </span>
-        <span className="block font-display text-[11px] uppercase tracking-[0.3em] text-acid-400">
-          3x3 · {TOURNAMENT.edition}
+        <span className="mt-0.5 block font-display text-[11px] uppercase tracking-[0.3em] text-violet-300">
+          {TOURNAMENT.edition}
         </span>
       </span>
     </span>

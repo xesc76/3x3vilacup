@@ -63,9 +63,10 @@ export default async function HomePage() {
                 <p className="inline-block bg-acid-400 px-2 py-0.5 font-display text-xs uppercase tracking-[0.2em] text-violet-950">
                   {TOURNAMENT.edition}
                 </p>
-                <h1 className="mt-2 text-4xl leading-[0.85] sm:text-6xl">
-                  Vila Cup
-                  <span className="block text-acid-400">3x3</span>
+                {/* normal-case perquè els h1 van en majúscules per defecte
+                    i la marca ha de sortir tal qual: 3x3vilacup. */}
+                <h1 className="mt-2 text-4xl lowercase leading-none sm:text-6xl">
+                  3x3<span className="text-acid-400">vilacup</span>
                 </h1>
               </div>
             </div>

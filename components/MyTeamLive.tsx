@@ -4,18 +4,32 @@ import { useMemo, useState } from 'react';
 import { CATEGORIES } from '@/lib/constants';
 import { computeStandings, groupStandings } from '@/lib/standings';
 import { useLiveMatches } from '@/lib/useLiveMatches';
-import type { Category, MatchWithNames, Team } from '@/lib/types';
+import type {
+  Category,
+  CategoryPlayoff,
+  MatchWithNames,
+  PlayoffMatchWithNames,
+  PlayoffRound,
+  Team,
+} from '@/lib/types';
 import { FilterChips } from './FilterChips';
 import { LiveIndicator } from './LiveIndicator';
 import { MatchCard } from './MatchCard';
+import { PlayoffSchedule } from './PlayoffSchedule';
 import { StandingsCriteria, StandingsTable } from './StandingsTable';
 
 export function MyTeamLive({
   initialMatches,
   teams,
+  playoffRounds,
+  playoffMatches,
+  playoffStates,
 }: {
   initialMatches: MatchWithNames[];
   teams: Team[];
+  playoffRounds: PlayoffRound[];
+  playoffMatches: PlayoffMatchWithNames[];
+  playoffStates: CategoryPlayoff[];
 }) {
   const [category, setCategory] = useState<Category | null>(null);
   const [teamId, setTeamId] = useState<string | null>(null);
@@ -64,6 +78,20 @@ export function MyTeamLive({
   }, [team, myStandings]);
 
   const myRow = myStandings?.rows.find((r) => r.teamId === team?.id) ?? null;
+
+  // Amb el play-off actiu, l'equip ha de veure també els seus creuaments.
+  const playoffActive = team
+    ? (playoffStates.find((s) => s.category === team.category)?.active ?? false)
+    : false;
+
+  const myPlayoffCount = useMemo(() => {
+    if (!team || !playoffActive) return 0;
+    return playoffMatches.filter(
+      (m) =>
+        m.resolved_home_team_id === team.id ||
+        m.resolved_away_team_id === team.id
+    ).length;
+  }, [team, playoffActive, playoffMatches]);
 
   return (
     <div className="space-y-5">
@@ -114,9 +142,10 @@ export function MyTeamLive({
         <>
           <div className="flex items-center justify-between border-t border-violet-100 pt-3">
             <p className="font-display text-xs uppercase tracking-widest text-violet-400">
-              {myMatches.length}{' '}
-              {myMatches.length === 1 ? 'partit' : 'partits'} · {played}{' '}
-              {played === 1 ? 'jugat' : 'jugats'}
+              {myMatches.length + myPlayoffCount}{' '}
+              {myMatches.length + myPlayoffCount === 1 ? 'partit' : 'partits'} ·{' '}
+              {played} {played === 1 ? 'jugat' : 'jugats'}
+              {myPlayoffCount > 0 && ` · ${myPlayoffCount} de play-off`}
             </p>
             <LiveIndicator live={live} />
           </div>
@@ -144,10 +173,22 @@ export function MyTeamLive({
             </div>
           )}
 
+          {/* Els creuaments van primer: amb el play-off actiu són el que
+              l'equip vol saber ara mateix. */}
+          {playoffActive && (
+            <PlayoffSchedule
+              rounds={playoffRounds}
+              matches={playoffMatches}
+              activeCategories={[team.category]}
+              teamId={team.id}
+              title={`Play-off de ${team.name}`}
+            />
+          )}
+
           <section>
-            <h2 className="eyebrow mb-2.5 text-violet-950">
-              <span className="h-3 w-1 bg-acid-400" />
-              Partits de {team.name}
+            <h2 className="eyebrow mb-2.5">
+              <span className="h-3 w-1 bg-violet-200" />
+              {playoffActive ? 'Fase de grups' : `Partits de ${team.name}`}
             </h2>
             {myMatches.length === 0 ? (
               <p className="panel px-4 py-8 text-center text-sm text-violet-400">

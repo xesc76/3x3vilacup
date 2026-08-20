@@ -16,16 +16,27 @@ export function PlayoffSchedule({
   rounds,
   matches,
   activeCategories,
+  teamId,
+  title = 'Play-off',
 }: {
   rounds: PlayoffRound[];
   matches: PlayoffMatchWithNames[];
   activeCategories: Category[];
+  /** Si ve informat, només els creuaments d'aquest equip ("El meu equip"). */
+  teamId?: string;
+  title?: string;
 }) {
   const activeRounds = rounds.filter((r) =>
     activeCategories.includes(r.category)
   );
   const roundIds = new Set(activeRounds.map((r) => r.id));
-  const visible = matches.filter((m) => roundIds.has(m.round_id));
+  const visible = matches.filter(
+    (m) =>
+      roundIds.has(m.round_id) &&
+      (!teamId ||
+        m.resolved_home_team_id === teamId ||
+        m.resolved_away_team_id === teamId)
+  );
 
   if (visible.length === 0) return null;
 
@@ -43,7 +54,7 @@ export function PlayoffSchedule({
     <section>
       <h2 className="eyebrow mb-2.5 text-violet-950">
         <span className="h-3 w-1 bg-acid-400" />
-        Play-off
+        {title}
       </h2>
 
       <div className="space-y-2">

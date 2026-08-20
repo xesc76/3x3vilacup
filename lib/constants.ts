@@ -1,7 +1,8 @@
-import type { Category, MatchStatus } from './types';
+import type { Category, MatchStatus, SponsorTier } from './types';
 
 export const TOURNAMENT = {
-  name: 'Vila Cup 3x3',
+  /** Marca oficial: tot junt i en minúscules. */
+  name: '3x3vilacup',
   edition: '4a edició',
   date: '2026-08-23',
   dateLabel: 'Diumenge 23 d’agost de 2026',
@@ -52,3 +53,46 @@ export const TRIPLES_DIVISIONS: { value: 'noi' | 'noia'; label: string }[] = [
   { value: 'noi', label: 'Nois' },
   { value: 'noia', label: 'Noies' },
 ];
+
+/**
+ * Nivells de col·laboració, del que més aporta al que menys. L'ordre d'aquesta
+ * llista és el que marca la mida del logotip i l'ordre de les seccions.
+ */
+export const SPONSOR_TIERS: {
+  value: SponsorTier;
+  /** Títol de la secció al web públic. */
+  label: string;
+  /** Etiqueta curta per als desplegables de l'admin. */
+  short: string;
+  /** Alçada màxima del logotip. */
+  logoClass: string;
+  /** Columnes de la graella. */
+  gridClass: string;
+}[] = [
+  {
+    value: 'principal',
+    label: 'Patrocinador principal',
+    short: 'Principal',
+    logoClass: 'max-h-24',
+    gridClass: 'grid-cols-1 sm:grid-cols-2',
+  },
+  {
+    value: 'collaborador',
+    label: 'Col·laboradors',
+    short: 'Col·laborador',
+    logoClass: 'max-h-16',
+    gridClass: 'grid-cols-2 sm:grid-cols-3',
+  },
+  {
+    value: 'patrocinador',
+    label: 'Patrocinadors',
+    short: 'Patrocinador',
+    logoClass: 'max-h-10',
+    gridClass: 'grid-cols-3 sm:grid-cols-4',
+  },
+];
+
+export const SPONSOR_TIER_LABEL: Record<SponsorTier, string> =
+  Object.fromEntries(
+    SPONSOR_TIERS.map((t) => [t.value, t.short])
+  ) as Record<SponsorTier, string>;
