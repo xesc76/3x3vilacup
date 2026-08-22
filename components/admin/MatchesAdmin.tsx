@@ -6,6 +6,7 @@ import { useMemo, useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { CATEGORIES, CATEGORY_LABEL, TOURNAMENT } from '@/lib/constants';
 import { formatTime, fromTimeInput, toTimeInput } from '@/lib/format';
+import { findScheduleConflicts } from '@/lib/schedule';
 import type {
   Category,
   Court,
@@ -45,6 +46,10 @@ export function MatchesAdmin({
 
   const teamsInCategory = teams.filter((t) => t.category === form.category);
   const visible = filter ? matches.filter((m) => m.category === filter) : matches;
+
+  // Es calcula sobre TOTS els partits, no només els filtrats: un solapament
+  // pot ser entre dues categories diferents.
+  const conflicts = useMemo(() => findScheduleConflicts(matches), [matches]);
 
   function reset() {
     setEditingId(null);
@@ -284,16 +289,33 @@ export function MatchesAdmin({
         ]}
       />
 
+      {conflicts.size > 0 && (
+        <div className="border-l-4 border-red-500 bg-red-50 px-4 py-3">
+          <p className="font-display text-base uppercase tracking-wide text-red-800">
+            {conflicts.size} partits solapats
+          </p>
+          <p className="mt-1 text-sm text-red-700">
+            Hi ha partits programats a la mateixa pista i a la mateixa hora.
+            Estan marcats a la llista de sota: canvia’ls l’hora o la pista.
+          </p>
+        </div>
+      )}
+
       <div className="space-y-2">
         {visible.length === 0 && (
           <p className="panel p-6 text-center text-sm text-violet-500">
             Cap partit en aquesta selecció.
           </p>
         )}
-        {visible.map((match) => (
+        {visible.map((match) => {
+          const clash = conflicts.get(match.id);
+
+          return (
           <div
             key={match.id}
-            className="panel flex flex-wrap items-center gap-3 p-3.5"
+            className={`panel flex flex-wrap items-center gap-3 p-3.5 ${
+              clash ? 'border-l-4 border-l-red-500 bg-red-50' : ''
+            }`}
           >
             <span className="w-12 shrink-0 font-display text-base tabular-nums text-violet-800">
               {formatTime(match.starts_at)}
@@ -311,6 +333,11 @@ export function MatchesAdmin({
                   .filter(Boolean)
                   .join(' · ')}
               </p>
+              {clash && (
+                <p className="mt-0.5 text-xs font-semibold text-red-700">
+                  ⚠ {clash} partits alhora en aquesta pista
+                </p>
+              )}
             </div>
             <StatusBadge status={match.status} />
             <Link
@@ -334,7 +361,8 @@ export function MatchesAdmin({
               Esborrar
             </button>
           </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );

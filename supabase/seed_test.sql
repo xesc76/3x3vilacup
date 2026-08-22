@@ -19,7 +19,26 @@
 
 begin;
 
--- ---------- 0. Neteja ------------------------------------------------
+-- ---------- 0. Protecció ---------------------------------------------
+-- Si ja hi ha equips donats d'alta, aquest fitxer NO s'executa: podria
+-- carregar-se el torneig de veritat. Per forçar-ho (perquè de debò vols
+-- tornar a començar), buida primer els equips a mà i torna-ho a provar:
+--
+--   update public.category_playoff set active = false;
+--   delete from public.playoff_rounds;
+--   delete from public.teams;
+
+do $$
+begin
+  if exists (select 1 from public.teams) then
+    raise exception
+      'Ja hi ha % equips a la base de dades. Aquest fitxer és de PROVES i els esborraria. Llegeix el comentari de dalt si vols forçar-ho.',
+      (select count(*) from public.teams);
+  end if;
+end
+$$;
+
+-- ---------- 1. Neteja ------------------------------------------------
 -- El play-off ha d'estar desactivat abans de tocar partits: si no, el
 -- disparador que congela la fase de grups ho bloqueja.
 update public.category_playoff set active = false, activated_at = null;
